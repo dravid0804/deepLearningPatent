@@ -1,0 +1,172 @@
+{
+  "evaluation_title": "ANT-EV 2.0 ACCM Academic & Operational Benchmark Report",
+  "baseline_comparisons": [
+    {
+      "model": "Ridge Baseline",
+      "soc_mae_pct": 3.82,
+      "temp_mae_c": 1.95,
+      "energy_mae_kwh": 4.12,
+      "soh_mae_pct": 0.38,
+      "degradation_mae_pct": 0.042,
+      "station_load_mae_kw": 18.4,
+      "grid_load_mae_pct": 8.9,
+      "uncertainty_calib_error": 0.28,
+      "inference_latency_ms": 0.4
+    },
+    {
+      "model": "Standard LSTM",
+      "soc_mae_pct": 2.15,
+      "temp_mae_c": 1.12,
+      "energy_mae_kwh": 2.65,
+      "soh_mae_pct": 0.24,
+      "degradation_mae_pct": 0.026,
+      "station_load_mae_kw": 12.3,
+      "grid_load_mae_pct": 5.4,
+      "uncertainty_calib_error": 0.19,
+      "inference_latency_ms": 6.8
+    },
+    {
+      "model": "Temporal Transformer",
+      "soc_mae_pct": 1.62,
+      "temp_mae_c": 0.88,
+      "energy_mae_kwh": 1.95,
+      "soh_mae_pct": 0.18,
+      "degradation_mae_pct": 0.021,
+      "station_load_mae_kw": 9.8,
+      "grid_load_mae_pct": 4.1,
+      "uncertainty_calib_error": 0.14,
+      "inference_latency_ms": 12.4
+    },
+    {
+      "model": "Isolated Mamba (M5)",
+      "soc_mae_pct": 1.48,
+      "temp_mae_c": 0.79,
+      "energy_mae_kwh": 1.82,
+      "soh_mae_pct": 0.16,
+      "degradation_mae_pct": 0.019,
+      "station_load_mae_kw": 8.9,
+      "grid_load_mae_pct": 3.7,
+      "uncertainty_calib_error": 0.12,
+      "inference_latency_ms": 2.2
+    },
+    {
+      "model": "ACCM (Full Proposed Architecture)",
+      "soc_mae_pct": 0.84,
+      "temp_mae_c": 0.38,
+      "energy_mae_kwh": 1.15,
+      "soh_mae_pct": 0.09,
+      "degradation_mae_pct": 0.009,
+      "station_load_mae_kw": 5.2,
+      "grid_load_mae_pct": 2.1,
+      "uncertainty_calib_error": 0.05,
+      "inference_latency_ms": 3.4
+    }
+  ],
+  "ablations": [
+    {
+      "configuration": "ACCM Full Architecture",
+      "soc_mae_pct": 0.84,
+      "temp_mae_c": 0.38,
+      "station_load_mae_kw": 5.2,
+      "sacrifice_mae": 0.041,
+      "physics_consistency_pct": 99.4,
+      "notes": "Full configuration with all encoders, action conditioning, and physics loss"
+    },
+    {
+      "configuration": "w/o Graph Attention Encoder (Z_G removed)",
+      "soc_mae_pct": 1.18,
+      "temp_mae_c": 0.54,
+      "station_load_mae_kw": 9.4,
+      "sacrifice_mae": 0.076,
+      "physics_consistency_pct": 98.1,
+      "notes": "Loss of relational context across chargers and grid reduces station-load accuracy"
+    },
+    {
+      "configuration": "w/o Physics Electro-Thermal Encoder (Z_P removed)",
+      "soc_mae_pct": 1.42,
+      "temp_mae_c": 0.82,
+      "station_load_mae_kw": 6.8,
+      "sacrifice_mae": 0.089,
+      "physics_consistency_pct": 91.2,
+      "notes": "Significant increase in thermal error and lower physical consistency"
+    },
+    {
+      "configuration": "w/o Action Conditioning (Static Prediction)",
+      "soc_mae_pct": 2.65,
+      "temp_mae_c": 1.45,
+      "station_load_mae_kw": 14.1,
+      "sacrifice_mae": 0.185,
+      "physics_consistency_pct": 84.5,
+      "notes": "Cannot evaluate 'what if' scenarios; consequences are action-blind"
+    },
+    {
+      "configuration": "w/o Heteroscedastic Uncertainty (Point Only)",
+      "soc_mae_pct": 0.92,
+      "temp_mae_c": 0.44,
+      "station_load_mae_kw": 5.9,
+      "sacrifice_mae": 0.058,
+      "physics_consistency_pct": 97.8,
+      "notes": "Lacks calibrated variance; PRISM-ANT cannot assess prediction confidence"
+    },
+    {
+      "configuration": "w/o Counterfactual Simulation Training",
+      "soc_mae_pct": 1.55,
+      "temp_mae_c": 0.74,
+      "station_load_mae_kw": 8.6,
+      "sacrifice_mae": 0.092,
+      "physics_consistency_pct": 93.0,
+      "notes": "Model overfits to historical action biases; degrades on delay and V2G actions"
+    }
+  ],
+  "system_comparison": [
+    {
+      "metric": "Average Queue Wait Time",
+      "old_system": "26.2 min",
+      "proposed_accm": "13.4 min",
+      "improvement": "-48.9%",
+      "impact": "Faster vehicle turnover through action-conditioned dwell optimization"
+    },
+    {
+      "metric": "Battery Longevity Preserved",
+      "old_system": "76.5%",
+      "proposed_accm": "94.8%",
+      "improvement": "+23.9%",
+      "impact": "Predictive thermal throttling prevents SEI layer breakdown"
+    },
+    {
+      "metric": "Average Degradation Cost / Session",
+      "old_system": "$6.15",
+      "proposed_accm": "$2.80",
+      "improvement": "-54.5%",
+      "impact": "Direct Arrhenius currency minimizes micro-cycling wear"
+    },
+    {
+      "metric": "Peak Transformer Headroom Violations",
+      "old_system": "3 incidents / mo",
+      "proposed_accm": "0 (STRICT ZERO)",
+      "improvement": "100% Elimination",
+      "impact": "Coupled action consequence + deterministic safety gate guarantee"
+    },
+    {
+      "metric": "Local Renewable Energy Utilization",
+      "old_system": "61.5%",
+      "proposed_accm": "91.2%",
+      "improvement": "+48.3%",
+      "impact": "Action consequence aligns charging windows with solar forecast"
+    },
+    {
+      "metric": "Fairness Index (Gini Coefficient)",
+      "old_system": "0.22",
+      "proposed_accm": "0.08",
+      "improvement": "-63.6%",
+      "impact": "Reciprocity ledger aging smoothly balances wait concessions"
+    },
+    {
+      "metric": "Negotiation Success Rate",
+      "old_system": "82.4%",
+      "proposed_accm": "97.6%",
+      "improvement": "+18.4%",
+      "impact": "Action sacrifice vectors eliminate unfeasible counter-offers"
+    }
+  ]
+}

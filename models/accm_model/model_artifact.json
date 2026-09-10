@@ -1,0 +1,167 @@
+{
+  "model_id": "ACCM-UNIFIED-MULTI-HORIZON",
+  "version": "2.4.0",
+  "timestamp": "2026-09-10T17:37:12Z",
+  "architecture": {
+    "name": "Action-Conditioned Consequence Model",
+    "temporal_encoder": "Selective State Space (S6/Mamba) x 4 blocks",
+    "graph_encoder": "2-Layer Relational Graph Attention Network",
+    "physics_encoder": "Electro-Thermal Cross-Product Residual Network",
+    "negotiation_encoder": "Reciprocity & Fairness Context MLP",
+    "fused_latent_dim": 256,
+    "action_vocabulary": 7,
+    "prediction_horizons_min": [
+      5,
+      10,
+      15,
+      30,
+      60
+    ],
+    "consequence_targets": 11,
+    "sacrifice_vector_dim": 8,
+    "trainable_parameters": 1231736
+  },
+  "datasets": {
+    "ev_charging_dataset": {
+      "dataset_name": "Kaggle Electric Vehicle Charging and Dynamics",
+      "source": "ev_charging_dataset.csv",
+      "version": "2.4.0",
+      "units": {
+        "battery_capacity": "kWh",
+        "soc": "% (0 - 100)",
+        "charging_rate": "kW",
+        "temperature": "\u00b0C",
+        "distance": "km",
+        "queue_time": "min",
+        "energy_drawn": "kWh"
+      },
+      "sampling_frequency": "Per session / dynamic telemetry",
+      "preprocessing_version": "ACCM-PREPROC-1.0",
+      "split": {
+        "train": 0.7,
+        "val": 0.15,
+        "test": 0.15
+      }
+    },
+    "nasa_battery_aging": {
+      "dataset_name": "NASA Ames Prognostics Center of Excellence Li-ion Battery Aging",
+      "source": "cleaned_dataset",
+      "version": "1.0.0",
+      "units": {
+        "capacity": "Ah",
+        "ambient_temp": "\u00b0C",
+        "impedance_re": "Ohm",
+        "impedance_rct": "Ohm"
+      },
+      "sampling_frequency": "Cycle-by-cycle run-to-failure",
+      "preprocessing_version": "ACCM-PREPROC-1.0",
+      "split": {
+        "train": 0.7,
+        "val": 0.15,
+        "test": 0.15
+      }
+    }
+  },
+  "training_metadata": {
+    "dataset_rows": 64945,
+    "epochs_completed": 5,
+    "final_loss": 2472.5805,
+    "training_time_sec": 120.7,
+    "epoch_progression": [
+      {
+        "epoch": 1,
+        "train_loss": 3831.478,
+        "nll_loss": 82.6952,
+        "physics_loss": 308.1356,
+        "sacrifice_loss": 0.0271
+      },
+      {
+        "epoch": 2,
+        "train_loss": 3246.9576,
+        "nll_loss": 19.9681,
+        "physics_loss": 278.5053,
+        "sacrifice_loss": 0.0068
+      },
+      {
+        "epoch": 3,
+        "train_loss": 2952.2701,
+        "nll_loss": 14.1776,
+        "physics_loss": 279.5098,
+        "sacrifice_loss": 0.0056
+      },
+      {
+        "epoch": 4,
+        "train_loss": 2696.6832,
+        "nll_loss": 11.8875,
+        "physics_loss": 272.0196,
+        "sacrifice_loss": 0.0076
+      },
+      {
+        "epoch": 5,
+        "train_loss": 2472.5805,
+        "nll_loss": 10.9902,
+        "physics_loss": 223.0475,
+        "sacrifice_loss": 0.0055
+      }
+    ]
+  },
+  "scalers": {
+    "means": {
+      "soc": 28.452166712908895,
+      "battery_capacity_kwh": 74.78874924002156,
+      "charging_power_kw": 50.08951249492271,
+      "voltage_v": 400.0,
+      "current_a": 125.22378123730677,
+      "battery_temp_c": 29.148687045671497,
+      "ambient_temp_c": 24.641106201073953,
+      "internal_resistance_ohm": 0.04499535871449086,
+      "soh": 97.14765272471605,
+      "station_load_kw": 39.98838556633819,
+      "queue_time_mins": 5.015537622797985,
+      "grid_load_pct": 10.656448716990782
+    },
+    "stds": {
+      "soc": 15.960780172619685,
+      "battery_capacity_kwh": 14.342530338188343,
+      "charging_power_kw": 10.011305116930265,
+      "voltage_v": 1.0,
+      "current_a": 25.02826279232566,
+      "battery_temp_c": 9.496340156795409,
+      "ambient_temp_c": 9.409172633094368,
+      "internal_resistance_ohm": 0.0030152835761236545,
+      "soh": 0.6928661829625797,
+      "station_load_kw": 9.967656199202104,
+      "queue_time_mins": 4.995666573206664,
+      "grid_load_pct": 1.4299433893895033
+    },
+    "mins": {
+      "soc": 0.0993456919833119,
+      "battery_capacity_kwh": 30.0,
+      "charging_power_kw": 10.173855291430598,
+      "voltage_v": 400.0,
+      "current_a": 25.434638228576496,
+      "battery_temp_c": 0.08242039596529649,
+      "ambient_temp_c": 0.0,
+      "internal_resistance_ohm": 0.03219486296476637,
+      "soh": 93.98958419089938,
+      "station_load_kw": 0.0,
+      "queue_time_mins": 4.722938254793845e-05,
+      "grid_load_pct": 10.0
+    },
+    "maxs": {
+      "soc": 89.66286487864124,
+      "battery_capacity_kwh": 100.0,
+      "charging_power_kw": 94.06485666499552,
+      "voltage_v": 400.0,
+      "current_a": 235.1621416624888,
+      "battery_temp_c": 48.272091020517514,
+      "ambient_temp_c": 40.0,
+      "internal_resistance_ohm": 0.05862481095626285,
+      "soh": 100.0,
+      "station_load_kw": 75.0,
+      "queue_time_mins": 53.09368486765453,
+      "grid_load_pct": 22.733639714792126
+    }
+  },
+  "status": "TRAINED_ACCM_MODEL_READY"
+}
