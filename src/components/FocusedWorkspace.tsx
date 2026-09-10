@@ -1,17 +1,316 @@
-import React,{useState}from'react';
-import{ArrowRight,Cpu,HeartPulse,PackageCheck,Plus,ShieldCheck,Trash2,Zap}from'lucide-react';
-import type{ChargingStation,EVDigitalTwin,GridTwinState,PrismAntDecisionResult}from'../types/antev';
-import{allocateStationPower,type StationAllocation}from'../services/engine/stationAllocator';
+import React, { useState } from 'react';
+import {
+  ArrowRight, Cpu, Plus, ShieldCheck, Trash2, Zap,
+  Activity, CheckCircle2, AlertTriangle, Battery, Gauge
+} from 'lucide-react';
+import type { ChargingStation, EVDigitalTwin, GridTwinState, PrismAntDecisionResult } from '../types/antev';
+import { allocateStationPower, type StationAllocation } from '../services/engine/stationAllocator';
 
-type Props={tab:string;evs:EVDigitalTwin[];station:ChargingStation;grid:GridTwinState;decisions:Record<string,PrismAntDecisionResult>;onAddEv:(v:{name:string;soc:number;target:number;deadline:number;maxPower:number;temperature:number;emergency:boolean;goods:boolean})=>void;onRemoveEv:(id:string)=>void};
-export const FocusedWorkspace:React.FC<Props>=({tab,evs,station,decisions,onAddEv,onRemoveEv})=>{const rows=allocateStationPower(evs,decisions,station);if(tab==='models')return <Models/>;if(tab==='emergency')return <Emergency rows={rows}/>;if(tab==='architecture')return <Architecture/>;if(tab==='patent')return <Patent/>;if(tab==='help')return <Help/>;const total=rows.reduce((s,r)=>s+r.powerKw,0),completed=evs.filter(x=>x.status==='completed');return <main className="focused-page"><section className="split-hero"><div><p className="eyebrow"><span className="live-dot"/> LIVE POWER ALLOCATION · ACCM ASSISTED</p><h1>Every available safe kW is redistributed</h1><p>Arrival, completion, temperature change, and emergency status all trigger a fresh ACCM consequence estimation and PRISM-ANT allocation.</p></div><div className="split-total"><span>Allocated now</span><strong>{total.toFixed(1)} kW</strong><small>of {station.maxGridPowerCapacityKw} kW safe site capacity</small></div></section><section className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 grid place-items-center"><Cpu size={18}/></div><div><div className="flex items-center gap-2"><span className="font-extrabold text-xs text-slate-900">ACCM INTELLIGENCE ENGINE</span><span className="badge-emerald px-2 py-0.5 rounded text-[10px] font-bold">ONLINE</span></div><span className="text-[11px] text-slate-500">Action-Conditioned Multi-Horizon Consequence Model v2.4 (1.23M params)</span></div></div><div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold"><span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">Temporal SSM: <b className="text-emerald-600 font-extrabold">ONLINE</b></span><span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">Graph GAT: <b className="text-emerald-600 font-extrabold">ONLINE</b></span><span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">Physics Encoder: <b className="text-emerald-600 font-extrabold">ONLINE</b></span><span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">Action Decoder: <b className="text-emerald-600 font-extrabold">ONLINE</b></span><span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">Uncertainty: <b className="text-emerald-600 font-extrabold">ONLINE</b></span></div></section><section className="split-summary"><div><b>{rows.length}</b><span>active sessions</span></div><div><b>{rows.filter(r=>r.powerKw>0).length}</b><span>receiving power</span></div><div><b>{completed.length}</b><span>completed / departed</span></div><div><b>{station.maxGridPowerCapacityKw-total<.1?'FULLY USED':'SAFE CAPS'}</b><span>site allocation state</span></div></section><AddEv onAdd={onAddEv}/><section className="allocation-panel"><div className="panel-head"><div><p className="eyebrow">DYNAMIC SPLIT</p><h2>Power, reason, and safe limit per EV</h2></div><span className="safe-pill"><ShieldCheck size={15}/> Temperature + electrical safety enforced</span></div><div className="allocation-list">{rows.map(row=><AllocationRow key={row.ev.id} row={row} station={station} onRemove={onRemoveEv}/>)}</div>{completed.length>0&&<div className="completed-strip"><b>Completed sessions:</b> {completed.map(ev=>`${ev.name} (${ev.telemetry.soc}%)`).join(' · ')}</div>}</section><section className="algorithm-card"><div><Cpu size={19}/><div><p className="eyebrow">PRISM-ANT ALLOCATION</p><h2>Predictive, risk-informed, safety-masked water-filling</h2></div></div><ol><li><b>M1–M5:</b> create the current need, forecast, health, thermal, and trajectory signals.</li><li><b>PRISM:</b> calculates an auditable priority from urgency, readiness risk, energy need, flexibility, forecast pressure, and strategy value.</li><li><b>Safety mask:</b> M4/M5 plus electrical constraints create an inviolable per-EV power cap.</li><li><b>Capped water-filling:</b> assigns all remaining safe station capacity, then repeats when an EV arrives or completes.</li></ol></section></main>};
+type Props = {
+  tab: string;
+  evs: EVDigitalTwin[];
+  station: ChargingStation;
+  grid: GridTwinState;
+  decisions: Record<string, PrismAntDecisionResult>;
+  onAddEv: (v: {
+    name: string;
+    soc: number;
+    target: number;
+    deadline: number;
+    maxPower: number;
+    temperature: number;
+    emergency: boolean;
+    goods: boolean;
+  }) => void;
+  onRemoveEv: (id: string) => void;
+};
 
-function AllocationRow({row,station,onRemove}:{row:StationAllocation;station:ChargingStation;onRemove:(id:string)=>void}){const{ev,powerKw,capKw,reserveKw,priority,targetSoc,reason,signals}=row;return <article className={powerKw>0?'allocation-row receiving':'allocation-row'}><div className="vehicle-label"><span className="vehicle-dot"><Zap size={14}/></span><div><b>{ev.name}</b><small>{ev.telemetry.soc}% to {targetSoc}% · departure in {ev.mobility.departureDeadlineMin} min</small></div></div><div className="allocation-track"><i style={{width:`${Math.min(100,powerKw/Math.max(1,station.maxGridPowerCapacityKw)*250)}%`}}/></div><div className="allocation-value"><b>{powerKw.toFixed(1)} kW</b><small>reserve {reserveKw.toFixed(0)} · safe cap {capKw.toFixed(0)}</small></div><div className="reason"><b>Why this allocation</b><span>{reason}</span><small className="signal-line">M1 {signals.energyNeedKwh.toFixed(1)} kWh · readiness {Math.round(signals.readinessRisk*100)}% · M2 load {Math.round(signals.forecastPressure*100)}% · M3 health {Math.round(signals.healthRisk*100)}% · M4 thermal {Math.round(signals.thermalRisk*100)}% · M5 future {Math.round(signals.futureTemperatureRisk*100)}%</small></div><button className="remove-ev" onClick={()=>onRemove(ev.id)} title="Remove this EV"><Trash2 size={15}/></button></article>}
+export const FocusedWorkspace: React.FC<Props> = ({
+  evs,
+  station,
+  decisions,
+  onAddEv,
+  onRemoveEv,
+}) => {
+  const rows = allocateStationPower(evs, decisions, station);
+  const totalAllocated = rows.reduce((s, r) => s + r.powerKw, 0);
+  const completed = evs.filter((x) => x.status === 'completed');
+  const availableHeadroom = Math.max(0, station.maxGridPowerCapacityKw - totalAllocated);
 
-function AddEv({onAdd}:{onAdd:Props['onAddEv']}){const[v,setV]=useState({name:'New EV',soc:25,target:80,deadline:90,maxPower:80,temperature:30,emergency:false,goods:false});const set=(key:keyof typeof v,value:string|boolean)=>setV(x=>({...x,[key]:typeof value==='string'&&key!=='name'?Number(value):value}));const field=(label:string,key:'soc'|'target'|'deadline'|'maxPower'|'temperature',min:number,max?:number)=><label className="field"><span>{label}</span><input type="number" min={min} max={max} value={v[key]} onChange={e=>set(key,e.target.value)}/></label>;return <section className="add-ev"><div><p className="eyebrow">TEST THE SPLIT</p><h2>Add a vehicle</h2><p>Enter a safe charging request; the live allocation recalculates immediately.</p></div><div className="add-grid"><label className="field name-field"><span>Vehicle name</span><input value={v.name} onChange={e=>set('name',e.target.value)}/></label>{field('Current SOC %','soc',1,99)}{field('Target SOC %','target',1,95)}{field('Deadline min','deadline',15)}{field('Max intake kW','maxPower',1)}{field('Battery temp °C','temperature',0,50)}<div className="add-actions"><label className="check"><input type="checkbox" checked={v.emergency} onChange={e=>set('emergency',e.target.checked)}/> Medical emergency</label><label className="check"><input type="checkbox" checked={v.goods} onChange={e=>set('goods',e.target.checked)}/> Goods urgent</label><button onClick={()=>onAdd(v)}><Plus size={15}/> Add and reallocate</button></div></div></section>}
+  return (
+    <main className="focused-page">
+      {/* Hero Section */}
+      <section className="split-hero">
+        <div>
+          <p className="eyebrow">
+            <span className="live-dot" /> STATION CONTROLLER · DYNAMIC CHARGE SPLITTING
+          </p>
+          <h1>Real-Time Autonomous Power Allocation Across Bays</h1>
+          <p>
+            The charging station controller uses <b>ACCM consequence intelligence</b> to evaluate candidate power levels and <b>PRISM-ANT</b> to negotiate dynamic charge-splitting, subject to an inviolable 42°C thermal and transformer safety gate.
+          </p>
+        </div>
+        <div className="split-total">
+          <span>Active Station Power</span>
+          <strong>{totalAllocated.toFixed(1)} kW</strong>
+          <small>of {station.maxGridPowerCapacityKw} kW Site Transformer Limit ({availableHeadroom.toFixed(1)} kW headroom)</small>
+        </div>
+      </section>
 
-function Models(){const m=[['M1 · Energy need','Session timestamps, SOC, capacity, target SOC, route/deadline','energy_need_kwh, duration_min, readiness_probability','energyNeedKwh + readinessRisk','Raises priority when a vehicle needs energy and is unlikely to be ready by departure.'],['M2 · Demand forecast','Active sessions, queue, current draw, capacity, time horizon','forecast_15/30/60_kw, occupancy, congestion risk','forecastPressure x readinessRisk','Raises service priority only when predicted site pressure coincides with this EV’s deadline risk.'],['M3 · Battery condition','SOH, cycle count, temperature, capacity/resistance telemetry','SOH, degradation rate, remaining-life estimate, confidence','healthRisk + healthConfidence','Protects normal-session battery life through a conservative cap/priority term; never permits unsafe power.'],['M4 · Thermal stress','Battery temperature, SOC, C-rate, requested power','thermal_stress, degradation cost, safe_power_cap_kw','safePowerCapKw + thermalRisk','Creates the hard power envelope. It is binding for every vehicle.'],['M5 · Future state','SOC/temperature sequence and candidate power over future horizons','SOC trajectory, temperature trajectory, uncertainty','futureTemperatureRisk','Caps a split that looks safe now but becomes thermally unsafe later.'],['M6 · Strategy value','Feasible actions plus M1–M5 outputs and grid state','action Q-values, selected policy, confidence','strategyValue','Ranks feasible strategies only after safety has masked unsafe actions.']];return <main className="focused-page"><section className="simple-hero"><p className="eyebrow">MODEL-TO-PRISM CONTRACT</p><h1>Every model has a specific decision handoff</h1><p>In this demo, values are local prototype estimators. Trained artifacts can replace each estimator without changing the PRISM signal contract.</p></section><section className="model-grid">{m.map(x=><article key={x[0]}><span>{x[0]}</span><p><b>Inputs:</b> {x[1]}</p><p><b>Outputs:</b> {x[2]}</p><p><b>Sent to PRISM:</b> <code>{x[3]}</code></p><small>{x[4]}</small></article>)}</section></main>}
-function Emergency({rows}:{rows:StationAllocation[]}){const medical=rows.find(r=>r.ev.utilityToken.isEmergency),goods=rows.filter(r=>r.ev.utilityToken.isFleet).sort((a,b)=>b.priority-a.priority)[0];return <main className="focused-page"><section className="simple-hero"><p className="eyebrow">EMERGENCY ALLOCATION</p><h1>Medical and goods priorities</h1><p>Emergency raises readiness priority. Temperature and electrical safety remain hard constraints.</p></section><section className="emergency-grid"><Card icon={<HeartPulse/>} title="Medical emergency" row={medical}/><Card icon={<PackageCheck/>} title="Goods urgency" row={goods}/></section></main>};function Card({icon,title,row}:{icon:React.ReactNode;title:string;row?:StationAllocation}){return <article className="emergency-card"><span className="emergency-icon">{icon}</span><h2>{title}</h2>{row?<><h3>{row.ev.name}</h3><strong>{row.powerKw.toFixed(1)} kW allocated</strong><p>{row.reason}</p></>:<p>Use the Emergency Commute demo or add an emergency EV to observe reallocation.</p>}</article>}
-function Architecture(){return <main className="focused-page"><section className="simple-hero"><p className="eyebrow">ARCHITECTURE</p><h1>One station decision loop</h1><p>Signals retain model provenance from inference through allocation and explanation.</p></section><div className="flow-steps">{['Telemetry + request','M1–M5 signals','PRISM score','Hard safety mask','M6 ranking','Capped water-fill','Reason record'].map((x,i)=><React.Fragment key={x}><article><b>{i+1}</b><span>{x}</span></article>{i<6&&<ArrowRight/>}</React.Fragment>)}</div></main>}
-function Patent(){const claims=[['Model evidence contract','Each allocation carries its named M1-M6 signal, confidence, calculation time, safe cap, readiness reserve, and command.'],['Safety before priority','PRISM-ANT creates a non-bypassable thermal/electrical/future-temperature cap before it scores any vehicle.'],['Readiness reserve','It reserves the minimum safe kW required to meet an EV deadline before it shares extra kW fairly.'],['Forecast-deadline interlock','M2 forecast pressure affects an EV only when that EV has readiness risk; it is not a generic bonus.'],['Narrow emergency rule','Medical urgency bypasses normal battery-life preference only. Temperature, vehicle, charger, and feeder limits remain binding.'],['Event evidence','Arrival, completion, or state changes re-run both reserve and share calculations with an explainable record.']];return <main className="focused-page"><section className="simple-hero"><p className="eyebrow">PRISM-ANT PATENT SPECIFICATION · DRAFT</p><h1>PRISM-ANT is the claim focus</h1><p>Candidate invention: safety mask → deadline reserve → fair remaining-power share → event reallocation with model evidence. This is not legal advice or a novelty conclusion.</p></section><section className="spec-list">{claims.map(([h,p])=><article key={h}><b>{h}</b><p>{p}</p></article>)}</section><section className="algorithm-card"><div><Cpu size={19}/><div><p className="eyebrow">PROPOSED DIFFERENTIATION</p><h2>More specific than a priority queue</h2></div></div><ol><li>PRISM-ANT does not claim generic dynamic allocation: existing systems already use SOC, temperature, time, and priority.</li><li>The candidate difference is its strict order: model evidence → hard safety mask → deadline reserve → fair share → event record.</li><li>A patent professional must compare that exact combination to prior art before filing.</li></ol></section></main>}
-function Help(){return <main className="focused-page"><section className="simple-hero"><p className="eyebrow">HELP</p><h1>Run the demo</h1></section><section className="algorithm-card"><ol><li><code>npm install</code></li><li><code>npm run dev</code></li><li>Select a demo, add/remove an EV, then choose Run demo or Step.</li></ol></section></main>}
+      {/* ACCM Status Banner */}
+      <section className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 grid place-items-center">
+            <Cpu size={18} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-xs text-slate-900">ACCM DEEP LEARNING MODEL</span>
+              <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">ONLINE</span>
+            </div>
+            <span className="text-[11px] text-slate-500">
+              Single Unified Neural Network (1.23M params) assisting PRISM-ANT Negotiation
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-bold">
+          <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            Temporal S6 SSM: <b className="text-emerald-600 font-extrabold">ONLINE</b>
+          </span>
+          <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            Bay Relational GAT: <b className="text-emerald-600 font-extrabold">ONLINE</b>
+          </span>
+          <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            Physics Residual: <b className="text-emerald-600 font-extrabold">ONLINE</b>
+          </span>
+          <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            Action Decoder: <b className="text-emerald-600 font-extrabold">ONLINE</b>
+          </span>
+          <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            Uncertainty: <b className="text-emerald-600 font-extrabold">ONLINE</b>
+          </span>
+        </div>
+      </section>
+
+      {/* Station Summary Metrics */}
+      <section className="split-summary">
+        <div>
+          <b>{rows.length}</b>
+          <span>Occupied Charging Bays</span>
+        </div>
+        <div>
+          <b>{rows.filter((r) => r.powerKw > 0).length}</b>
+          <span>Actively Receiving Power</span>
+        </div>
+        <div>
+          <b>{completed.length}</b>
+          <span>Completed & Ready to Depart</span>
+        </div>
+        <div>
+          <b>{availableHeadroom < 1.0 ? 'TRANSFORMER FULL' : 'HEADROOM SAFE'}</b>
+          <span>Grid Feeder Constraint</span>
+        </div>
+      </section>
+
+      {/* Add EV Component */}
+      <AddEv onAdd={onAddEv} />
+
+      {/* Live Allocation Panel */}
+      <section className="allocation-panel">
+        <div className="panel-head">
+          <div>
+            <p className="eyebrow">DYNAMIC CHARGE SPLITTING</p>
+            <h2>Power Allocation, Reasoning, and Safety Envelopes per Bay</h2>
+          </div>
+          <span className="safe-pill">
+            <ShieldCheck size={15} /> 42°C Thermal Interlock + Transformer Gate Enforced
+          </span>
+        </div>
+
+        <div className="allocation-list">
+          {rows.map((row) => (
+            <AllocationRow
+              key={row.ev.id}
+              row={row}
+              station={station}
+              onRemove={onRemoveEv}
+            />
+          ))}
+        </div>
+
+        {completed.length > 0 && (
+          <div className="completed-strip mt-3 text-xs text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+            <b>Ready to depart:</b>{' '}
+            {completed.map((ev) => `${ev.name} (${ev.telemetry.soc}%)`).join(' · ')}
+          </div>
+        )}
+      </section>
+
+      {/* Algorithm Explainer Card */}
+      <section className="algorithm-card">
+        <div>
+          <Cpu size={19} />
+          <div>
+            <p className="eyebrow">CLOSED-LOOP ALLOCATION METHODOLOGY</p>
+            <h2>ACCM Consequence Prediction + PRISM-ANT Reciprocity + Deterministic Safety</h2>
+          </div>
+        </div>
+        <ol>
+          <li>
+            <b>1. ACCM Consequence Forecast:</b> The unified deep learning model forecasts the multi-horizon battery temperature, SOC delta, degradation cost, and grid impact for candidate power actions, generating an 8-dimensional Action Sacrifice Vector (S_a).
+          </li>
+          <li>
+            <b>2. PRISM-ANT Reciprocity Ledger:</b> PRISM-ANT calculates an auditable allocation priority using travel urgency, departure deadline, and accumulated driver reciprocity credits (cooperative drivers receive charging priority).
+          </li>
+          <li>
+            <b>3. Deterministic Hard Safety Gate:</b> Electro-thermal constraints clamp the maximum power intake if core battery temperature reaches 42°C or if the station transformer is congested.
+          </li>
+          <li>
+            <b>4. Dynamic Capped Water-Filling:</b> The station controller divides all available transformer capacity fairly among active bays, dynamically recalculating whenever a new EV plugs in or departs.
+          </li>
+        </ol>
+      </section>
+    </main>
+  );
+};
+
+function AllocationRow({
+  row,
+  station,
+  onRemove,
+}: {
+  row: StationAllocation;
+  station: ChargingStation;
+  onRemove: (id: string) => void;
+}) {
+  const { ev, powerKw, capKw, reserveKw, targetSoc, reason, signals } = row;
+  const isCappedByTemp = ev.telemetry.batteryTemp >= 41.5;
+
+  return (
+    <article className={powerKw > 0 ? 'allocation-row receiving' : 'allocation-row'}>
+      <div className="vehicle-label">
+        <span className="vehicle-dot">
+          <Zap size={14} />
+        </span>
+        <div>
+          <b className="text-slate-900 font-bold">{ev.name}</b>
+          <small className="text-slate-500">
+            {ev.telemetry.soc}% → {targetSoc}% · departure in {ev.mobility.departureDeadlineMin} min · {ev.telemetry.batteryTemp}°C
+          </small>
+        </div>
+      </div>
+
+      <div className="allocation-track">
+        <i
+          style={{
+            width: `${Math.min(100, (powerKw / Math.max(1, station.maxGridPowerCapacityKw)) * 250)}%`,
+          }}
+        />
+      </div>
+
+      <div className="allocation-value text-right">
+        <b className="text-blue-700 font-bold">{powerKw.toFixed(1)} kW</b>
+        <small className="text-slate-500 block">
+          Reserve: {reserveKw.toFixed(0)} kW · Safe Cap: {capKw.toFixed(0)} kW
+        </small>
+      </div>
+
+      <div className="reason">
+        <b className="text-slate-800 font-bold">Allocation Logic</b>
+        <span className="text-slate-600 block text-xs">{reason}</span>
+        <small className="signal-line text-[10px] text-blue-700 font-mono mt-1 block">
+          ACCM Energy: {signals.energyNeedKwh.toFixed(1)} kWh · ACCM Thermal Risk: {Math.round(signals.thermalRisk * 100)}% {isCappedByTemp ? '(THERMAL CLAMP ACTIVE)' : ''} · Reciprocity Credit: {ev.utilityToken.reciprocityCredit}
+        </small>
+      </div>
+
+      <button
+        className="remove-ev text-slate-400 hover:text-rose-600 transition p-1.5 rounded-lg hover:bg-rose-50"
+        onClick={() => onRemove(ev.id)}
+        title="Unplug this EV"
+      >
+        <Trash2 size={15} />
+      </button>
+    </article>
+  );
+}
+
+function AddEv({ onAdd }: { onAdd: Props['onAddEv'] }) {
+  const [v, setV] = useState({
+    name: 'New EV',
+    soc: 25,
+    target: 80,
+    deadline: 90,
+    maxPower: 80,
+    temperature: 30,
+    emergency: false,
+    goods: false,
+  });
+
+  const set = (key: keyof typeof v, value: string | boolean) =>
+    setV((x) => ({
+      ...x,
+      [key]: typeof value === 'string' && key !== 'name' ? Number(value) : value,
+    }));
+
+  const field = (
+    label: string,
+    key: 'soc' | 'target' | 'deadline' | 'maxPower' | 'temperature',
+    min: number,
+    max?: number
+  ) => (
+    <label className="field">
+      <span>{label}</span>
+      <input
+        type="number"
+        min={min}
+        max={max}
+        value={v[key]}
+        onChange={(e) => set(key, e.target.value)}
+      />
+    </label>
+  );
+
+  return (
+    <section className="add-ev">
+      <div>
+        <p className="eyebrow">SIMULATE NEW VEHICLE ARRIVAL</p>
+        <h2>Connect EV to Charging Bay</h2>
+        <p>Plug in a new vehicle to see the station controller re-estimate ACCM consequences and dynamically split power.</p>
+      </div>
+      <div className="add-grid">
+        <label className="field name-field">
+          <span>Vehicle Name / Bay ID</span>
+          <input value={v.name} onChange={(e) => set('name', e.target.value)} />
+        </label>
+        {field('Current SOC %', 'soc', 1, 99)}
+        {field('Target SOC %', 'target', 1, 95)}
+        {field('Departure in min', 'deadline', 15)}
+        {field('Max Intake kW', 'maxPower', 1)}
+        {field('Battery Temp °C', 'temperature', 0, 50)}
+
+        <div className="add-actions">
+          <label className="check">
+            <input
+              type="checkbox"
+              checked={v.emergency}
+              onChange={(e) => set('emergency', e.target.checked)}
+            />{' '}
+            Medical Emergency
+          </label>
+          <label className="check">
+            <input
+              type="checkbox"
+              checked={v.goods}
+              onChange={(e) => set('goods', e.target.checked)}
+            />{' '}
+            Commercial Fleet
+          </label>
+          <button onClick={() => onAdd(v)}>
+            <Plus size={15} /> Plug In & Reallocate
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}

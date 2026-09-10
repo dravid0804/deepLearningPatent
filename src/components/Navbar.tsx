@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  Activity, BarChart3, BookOpen, Cpu, FileText, GitBranch,
-  HeartPulse, Layers, Play, Pause, RotateCcw, Scale, Sliders, StepForward, Zap
+  Activity, BarChart3, Cpu, FileText,
+  Pause, Play, RotateCcw, Sliders, StepForward, Zap
 } from 'lucide-react';
 import type { SimulationScenario } from '../services/simulation/simulationScenarios';
 
@@ -19,16 +19,12 @@ interface Props {
 }
 
 const items = [
-  ['split', 'Overview & Split', Zap],
-  ['patent-core', 'Patent Core', FileText],
+  ['split', 'Station & Charge Splitting', Zap],
+  ['accm-model', 'ACCM Model & I/O', Cpu],
+  ['patent-core', 'Patent Novelty Core', FileText],
   ['consequence', 'Consequence Matrix', Activity],
-  ['models', 'ACCM & Baselines', Cpu],
-  ['negotiation', 'PRISM-ANT', Scale],
   ['scenario-lab', 'Scenario Lab', Sliders],
-  ['research', 'Research Lab', BarChart3],
-  ['explainability', 'Explainability', Layers],
-  ['emergency', 'Emergency', HeartPulse],
-  ['help', 'Help', BookOpen],
+  ['research', 'Research & Benchmarks', BarChart3],
 ];
 
 export const Navbar: React.FC<Props> = ({
@@ -95,14 +91,15 @@ export const Navbar: React.FC<Props> = ({
     <nav className="nav-row overflow-x-auto" aria-label="Application navigation">
       {items.map(([id, label, Icon]) => {
         const I = Icon as typeof Zap;
+        const isActive = activeTab === id;
         return (
           <button
             key={id as string}
             onClick={() => setActiveTab(id as string)}
-            className={activeTab === id ? 'nav-item selected' : 'nav-item'}
+            className={isActive ? 'active' : ''}
           >
             <I size={15} />
-            <span className="whitespace-nowrap">{label as string}</span>
+            <span>{label as string}</span>
           </button>
         );
       })}

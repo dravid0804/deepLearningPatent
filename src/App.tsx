@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { FocusedWorkspace } from './components/FocusedWorkspace';
+import { AccmModelDeepDive } from './components/tabs/AccmModelDeepDive';
 import { PatentCore } from './components/tabs/PatentCore';
 import { LiveConsequenceMatrix } from './components/tabs/LiveConsequenceMatrix';
 import { ResearchEvaluation } from './components/tabs/ResearchEvaluation';
-import { AiPredictionCenter } from './components/tabs/AiPredictionCenter';
-import { NegotiationSandbox } from './components/tabs/NegotiationSandbox';
 import { ScenarioLab } from './components/tabs/ScenarioLab';
-import { DecisionExplainability } from './components/tabs/DecisionExplainability';
 
 import { FOCUSED_SCENARIOS, type SimulationScenario } from './services/simulation/simulationScenarios';
 import type { EVDigitalTwin, ChargingStation, GridTwinState, PrismAntDecisionResult } from './types/antev';
 import { PrismAntEngine } from './services/engine/prismAntEngine';
 import { allocateStationPower } from './services/engine/stationAllocator';
-import { AccmPrismAdapter } from './services/engine/accmPrismAdapter';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('split');
@@ -95,14 +92,6 @@ export function App() {
     const timer = window.setInterval(step, 1800);
     return () => window.clearInterval(timer);
   }, [running, evs, stations, grid]);
-
-  const handleUpdateEv = (updatedEv: EVDigitalTwin) => {
-    setEvs((previous) => {
-      const next = previous.map((e) => (e.id === updatedEv.id ? updatedEv : e));
-      calculate(next, stations, grid);
-      return next;
-    });
-  };
 
   const addEv = (input: {
     name: string;
@@ -207,23 +196,14 @@ export function App() {
           />
         )}
 
+        {activeTab === 'accm-model' && (
+          <AccmModelDeepDive evs={evs} station={stations[0]} grid={grid} />
+        )}
+
         {activeTab === 'patent-core' && <PatentCore />}
 
         {activeTab === 'consequence' && (
           <LiveConsequenceMatrix evs={evs} station={stations[0]} grid={grid} />
-        )}
-
-        {activeTab === 'models' && (
-          <AiPredictionCenter evs={evs} stations={stations} grid={grid} />
-        )}
-
-        {activeTab === 'negotiation' && (
-          <NegotiationSandbox
-            evs={evs}
-            stations={stations}
-            grid={grid}
-            onUpdateEv={handleUpdateEv}
-          />
         )}
 
         {activeTab === 'scenario-lab' && (
@@ -237,46 +217,13 @@ export function App() {
         )}
 
         {activeTab === 'research' && <ResearchEvaluation />}
-
-        {activeTab === 'explainability' && (
-          <DecisionExplainability
-            evs={evs}
-            stations={stations}
-            grid={grid}
-            decisions={decisions}
-          />
-        )}
-
-        {activeTab === 'emergency' && (
-          <FocusedWorkspace
-            tab="emergency"
-            evs={evs}
-            station={stations[0]}
-            grid={grid}
-            decisions={decisions}
-            onAddEv={addEv}
-            onRemoveEv={removeEv}
-          />
-        )}
-
-        {activeTab === 'help' && (
-          <FocusedWorkspace
-            tab="help"
-            evs={evs}
-            station={stations[0]}
-            grid={grid}
-            decisions={decisions}
-            onAddEv={addEv}
-            onRemoveEv={removeEv}
-          />
-        )}
       </main>
 
       <footer className="focused-footer mt-8 py-4 border-t border-slate-200 text-center text-xs text-slate-500 bg-white">
         <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-between items-center gap-2">
-          <span>ANT-EV 2.0 • Autonomous EV Energy Negotiation Network</span>
-          <span className="text-blue-700 font-bold">ACCM (1.23M params) + PRISM-ANT Engine Verified</span>
-          <span>Patent Specification Disclosure Ready · Claims 1–12</span>
+          <span>ANT-EV 2.0 • Autonomous EV Charging Station Energy Negotiation System</span>
+          <span className="text-blue-700 font-bold">1 Unified Deep Model (ACCM 1.23M params) + PRISM-ANT Engine Verified</span>
+          <span>Patent Specification Disclosure Ready · Dynamic Charge Splitting</span>
         </div>
       </footer>
     </div>
