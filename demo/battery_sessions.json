@@ -1,0 +1,26 @@
+[
+  {
+    "session_id": "SESS_101",
+    "cell_chemistry": "NMC_811",
+    "pack_capacity_kwh": 75.0,
+    "current_soh_pct": 96.2,
+    "cycle_count": 240,
+    "measured_temp_c": 33.5,
+    "internal_resistance_mohm": 32.4,
+    "lifetime_degradation_cost_usd": 2.80,
+    "thermal_runaway_risk": "LOW",
+    "safe_power_envelope_kw": 150.0
+  },
+  {
+    "session_id": "SESS_105",
+    "cell_chemistry": "NMC_622",
+    "pack_capacity_kwh": 64.0,
+    "current_soh_pct": 88.0,
+    "cycle_count": 680,
+    "measured_temp_c": 43.8,
+    "internal_resistance_mohm": 48.9,
+    "lifetime_degradation_cost_usd": 9.45,
+    "thermal_runaway_risk": "ELEVATED_TEMP_LIMIT",
+    "safe_power_envelope_kw": 25.0
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "model_id": "M1_ENERGY_SESSION_BASELINE",
+  "version": "3.0.0",
+  "model_type": "ridge_regression_baseline",
+  "input_features": [
+    "arrival_hour_sin",
+    "arrival_hour_cos",
+    "weekday_sin",
+    "weekday_cos",
+    "site_code",
+    "station_code"
+  ],
+  "targets": [
+    "kwh_delivered",
+    "charging_duration_hours"
+  ],
+  "energy_weights": [
+    10.64617602660632,
+    3.298715531504007,
+    -3.236471405471481,
+    -0.4203431482894661,
+    0.6086142991032085,
+    0.0,
+    -0.047177064016496434
+  ],
+  "duration_weights": [
+    2.78927715436261,
+    0.4444703835545479,
+    -1.314301608855003,
+    -0.24470907509340808,
+    0.13469246754713887,
+    0.0,
+    0.0005796766724864065
+  ],
+  "metrics": {
+    "energy_mae_kwh": 5.874,
+    "energy_rmse_kwh": 8.202,
+    "duration_mae_hours": 1.809,
+    "train_rows": 576,
+    "test_rows": 144
+  },
+  "dataset": "training\\datasets\\m1_sessions_prepared.csv",
+  "limitations": "Dataset has no vehicle SOC, target SOC, pack capacity, or temperature.",
+  "status": "TRAINED_BASELINE_REQUIRES_VALIDATION"
+}

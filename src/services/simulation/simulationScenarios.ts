@@ -547,6 +547,30 @@ export const ALL_SCENARIOS: SimulationScenario[] = [
   SCENARIO_EMERGENCY_AMBULANCE
 ];
 
+// The focused product uses only these two station demonstrations. The normal
+// station intentionally contains ten sessions; the second adds a medical
+// emergency and an urgent goods-delivery session.
+const cloneSession = (source: EVDigitalTwin, suffix: string, name: string): EVDigitalTwin => ({
+  ...JSON.parse(JSON.stringify(source)), id: `${source.id}-${suffix}`, name,
+  assignedStationId: 'STATION-1', status: 'in_negotiation',
+});
+const FOCUSED_STATION: ChargingStation[] = [{
+  ...INITIAL_STATIONS[0], id: 'STATION-1', name: 'ANT-EV Demonstration Station', location: 'Demo site',
+  totalChargers: 10, availableChargers: 0, activeSessions: 10, queueLength: 0,
+  maxGridPowerCapacityKw: 300, currentPowerDrawKw: 0, forecastDemand15m: 260, forecastDemand30m: 280, forecastDemand60m: 240,
+}];
+const TEN_SESSIONS = [
+  cloneSession(AVAILABLE_EV_MODELS[0], '01', 'EV 01 - urgent commuter'), cloneSession(AVAILABLE_EV_MODELS[1], '02', 'EV 02 - flexible commuter'),
+  cloneSession(AVAILABLE_EV_MODELS[2], '03', 'EV 03 - delivery vehicle'), cloneSession(AVAILABLE_EV_MODELS[4], '04', 'EV 04 - city trip'),
+  cloneSession(AVAILABLE_EV_MODELS[5], '05', 'EV 05 - goods delivery'), cloneSession(AVAILABLE_EV_MODELS[6], '06', 'EV 06 - local commuter'),
+  cloneSession(AVAILABLE_EV_MODELS[7], '07', 'EV 07 - time-critical trip'), cloneSession(AVAILABLE_EV_MODELS[1], '08', 'EV 08 - flexible session'),
+  cloneSession(AVAILABLE_EV_MODELS[2], '09', 'EV 09 - logistics run'), cloneSession(AVAILABLE_EV_MODELS[6], '10', 'EV 10 - local journey'),
+];
+export const FOCUSED_SCENARIOS: SimulationScenario[] = [
+  { id:'ten-vehicle-station', name:'10 Vehicle Station', badge:'Normal allocation', description:'Ten simultaneous requests share one 300 kW station.', keyPatentFeatures:['Safe power split'], stations:structuredClone(FOCUSED_STATION), grid:{...INITIAL_GRID_STATE}, fleet:{...INITIAL_FLEET_STATE}, evs:TEN_SESSIONS, expectedDecisions:{}, scenarioNotes:[] },
+  { id:'emergency-commute', name:'Emergency Commute', badge:'Medical + goods priority', description:'Medical and goods-delivery urgency enter the same safety-constrained station split.', keyPatentFeatures:['Emergency allocation'], stations:structuredClone(FOCUSED_STATION), grid:{...INITIAL_GRID_STATE,gridStatus:'HIGH_LOAD'}, fleet:{...INITIAL_FLEET_STATE}, evs:[cloneSession(AVAILABLE_EV_MODELS[3],'MED','Medical emergency'), ...TEN_SESSIONS.slice(0,9)], expectedDecisions:{}, scenarioNotes:[] },
+];
+
 // Evaluation metrics comparison data (Section 12 of spec)
 export const EVALUATION_METRICS_DATA: EvaluationMetrics = {
   averageWaitTimeMin: { baselineFifo: 34.5, baselinePrism1: 26.2, antev2: 14.8 },

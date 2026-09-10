@@ -1,0 +1,24 @@
+{
+  "model_id": "M5_MAMBA_STATE_SPACE",
+  "version": "1.4.2",
+  "architecture": "Selective State Space (S6) with Linear Scan",
+  "dimensions": {
+    "d_state": 16,
+    "d_model": 32,
+    "seq_len": 60
+  },
+  "horizons_minutes": [
+    5,
+    10,
+    15,
+    20,
+    30
+  ],
+  "metrics": {
+    "soc_mae_pct": 1.14,
+    "temp_mae_c": 0.42,
+    "latency_ms": 2.1
+  },
+  "dataset": "Kaggle EV Driving and Charging Time-Series Dataset",
+  "status": "DEMO_ARTIFACT_REQUIRES_VALIDATION"
+}

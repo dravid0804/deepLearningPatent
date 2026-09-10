@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-08-31T10:35:00Z",
+  "grid_connection_status": "ONLINE_NORMAL",
+  "feeder_voltage_v": 480.2,
+  "feeder_frequency_hz": 60.01,
+  "current_station_draw_kw": 246.6,
+  "station_contract_limit_kw": 300.0,
+  "transformer_headroom_kw": 53.4,
+  "solar_pv_current_output_kw": 45.2,
+  "bess_soc_pct": 78.5,
+  "bess_status": "IDLE_STANDBY",
+  "current_energy_price_usd_kwh": 0.22,
+  "peak_demand_warning": false,
+  "demand_response_event_active": false,
+  "predicted_grid_peak_in_minutes": 45
+}

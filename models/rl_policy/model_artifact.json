@@ -1,0 +1,20 @@
+{
+  "model_id": "M6_CONSTRAINED_RL_POLICY",
+  "version": "3.0.1",
+  "algorithm": "Masked PPO Actor-Critic",
+  "actions": [
+    "CHARGE_NOW_FAST",
+    "CHARGE_NOW_STANDARD",
+    "COOPERATIVE_DELAY",
+    "REDUCE_POWER",
+    "ENERGY_RESERVATION",
+    "REDIRECT_STATION",
+    "ELIGIBLE_V2G_EXPORT"
+  ],
+  "metrics": {
+    "avg_system_reward": 84.6,
+    "safety_violation_rate": 0.0
+  },
+  "dataset": "ACN-Sim Gym Environment",
+  "status": "DEMO_ARTIFACT_REQUIRES_VALIDATION"
+}

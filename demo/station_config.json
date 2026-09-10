@@ -1,0 +1,30 @@
+{
+  "station_id": "ANTEV-METRO-01",
+  "station_name": "Metro Transit EV Fast Charging Hub",
+  "location": "Central Grid Sector 4",
+  "charger_count": 8,
+  "site_power_limit_kw": 300,
+  "transformer_rating_kva": 400,
+  "grid_feeder_ampacity_a": 600,
+  "solar_pv_capacity_kw": 60,
+  "bess_storage_kwh": 120,
+  "bess_max_discharge_kw": 50,
+  "v2g_enabled": true,
+  "operating_hours": "00:00-24:00",
+  "tariff_schedule": {
+    "off_peak_rate_usd_kwh": 0.12,
+    "shoulder_rate_usd_kwh": 0.22,
+    "peak_rate_usd_kwh": 0.48,
+    "demand_charge_penalty_per_kw": 18.50
+  },
+  "reciprocity_policy": {
+    "credit_per_minute_delay": 0.05,
+    "half_life_days": 14,
+    "decay_lambda": 0.0495
+  },
+  "safety_limits": {
+    "battery_temp_hard_cutoff_c": 42.0,
+    "safe_power_envelope_kw": 25.0,
+    "max_transformer_utilization_pct": 95.0
+  }
+}

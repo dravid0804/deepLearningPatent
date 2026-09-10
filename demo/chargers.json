@@ -1,0 +1,98 @@
+[
+  {
+    "charger_id": "CHG_01",
+    "bay_number": 1,
+    "connector_type": "CCS2_DC_FAST",
+    "max_power_kw": 150,
+    "min_power_kw": 15,
+    "status": "CHARGING",
+    "active_session_id": "SESS_101",
+    "current_power_kw": 78.4,
+    "temperature_c": 32.1,
+    "v2g_supported": true
+  },
+  {
+    "charger_id": "CHG_02",
+    "bay_number": 2,
+    "connector_type": "CCS2_DC_FAST",
+    "max_power_kw": 150,
+    "min_power_kw": 15,
+    "status": "CHARGING",
+    "active_session_id": "SESS_102",
+    "current_power_kw": 42.0,
+    "temperature_c": 29.5,
+    "v2g_supported": true
+  },
+  {
+    "charger_id": "CHG_03",
+    "bay_number": 3,
+    "connector_type": "CCS2_DC_FAST",
+    "max_power_kw": 150,
+    "min_power_kw": 15,
+    "status": "AVAILABLE",
+    "active_session_id": null,
+    "current_power_kw": 0.0,
+    "temperature_c": 24.0,
+    "v2g_supported": true
+  },
+  {
+    "charger_id": "CHG_04",
+    "bay_number": 4,
+    "connector_type": "CCS2_DC_FAST",
+    "max_power_kw": 150,
+    "min_power_kw": 15,
+    "status": "CHARGING",
+    "active_session_id": "SESS_104",
+    "current_power_kw": 91.2,
+    "temperature_c": 34.2,
+    "v2g_supported": false
+  },
+  {
+    "charger_id": "CHG_05",
+    "bay_number": 5,
+    "connector_type": "CCS2_DC_FAST",
+    "max_power_kw": 100,
+    "min_power_kw": 10,
+    "status": "CHARGING",
+    "active_session_id": "SESS_105",
+    "current_power_kw": 25.0,
+    "temperature_c": 43.1,
+    "v2g_supported": false
+  },
+  {
+    "charger_id": "CHG_06",
+    "bay_number": 6,
+    "connector_type": "NACS_DC_FAST",
+    "max_power_kw": 150,
+    "min_power_kw": 15,
+    "status": "WAITING",
+    "active_session_id": "SESS_106",
+    "current_power_kw": 0.0,
+    "temperature_c": 25.4,
+    "v2g_supported": true
+  },
+  {
+    "charger_id": "CHG_07",
+    "bay_number": 7,
+    "connector_type": "TYPE2_AC",
+    "max_power_kw": 22,
+    "min_power_kw": 3.7,
+    "status": "AVAILABLE",
+    "active_session_id": null,
+    "current_power_kw": 0.0,
+    "temperature_c": 22.0,
+    "v2g_supported": false
+  },
+  {
+    "charger_id": "CHG_08",
+    "bay_number": 8,
+    "connector_type": "CCS2_DC_FAST",
+    "max_power_kw": 150,
+    "min_power_kw": 15,
+    "status": "CHARGING",
+    "active_session_id": "SESS_108",
+    "current_power_kw": 120.0,
+    "temperature_c": 31.0,
+    "v2g_supported": true
+  }
+]

@@ -1,0 +1,76 @@
+{
+  "model_id": "M2_STATION_DEMAND_BASELINE",
+  "version": "3.0.0",
+  "model_type": "multi_horizon_ridge_regression_baseline",
+  "input_features": [
+    "hour_sin",
+    "hour_cos",
+    "weekday_sin",
+    "weekday_cos",
+    "station_code",
+    "queue_time_mins",
+    "station_capacity_ev",
+    "charging_rate_kw",
+    "fleet_size",
+    "temperature_c"
+  ],
+  "targets": [
+    "station_power_draw_kw_t_plus_1h",
+    "station_power_draw_kw_t_plus_2h",
+    "station_power_draw_kw_t_plus_4h"
+  ],
+  "weights": {
+    "1h": [
+      39.773295073188784,
+      0.1031915610435738,
+      -0.14975960703835262,
+      0.0016751968433119033,
+      -0.060506826074547285,
+      0.0,
+      -0.003603135082621782,
+      -0.00875560003467451,
+      0.0021388801635644685,
+      0.0008466723537223036,
+      0.005317867565903819
+    ],
+    "2h": [
+      40.01028101425694,
+      0.13746652851233918,
+      -0.11825605374026628,
+      0.013198666828449186,
+      -0.06387254425163282,
+      0.0,
+      0.00031737536873539346,
+      -0.01314714861118172,
+      0.0013735673831161734,
+      0.0005546716514013364,
+      -0.0024284064892462153
+    ],
+    "4h": [
+      39.79574102101636,
+      0.17880998269495585,
+      -0.03447057493477114,
+      0.011639312449948811,
+      -0.07481446998775934,
+      0.0,
+      0.0009638071146151669,
+      0.002027116597457606,
+      0.001502299830271928,
+      0.0008699488068514351,
+      0.0030961519574711927
+    ]
+  },
+  "metrics": {
+    "train_rows": 51952,
+    "test_rows": 12989,
+    "1h_mae_kw": 8.067,
+    "1h_rmse_kw": 10.119,
+    "2h_mae_kw": 8.064,
+    "2h_rmse_kw": 10.117,
+    "4h_mae_kw": 8.069,
+    "4h_rmse_kw": 10.121
+  },
+  "dataset": "training\\datasets\\m2_station_demand_prepared.csv",
+  "limitations": "Hourly source data and no real tariff; outputs are 1/2/4-hour forecasts, not 15/30/60-minute forecasts.",
+  "status": "TRAINED_BASELINE_REQUIRES_VALIDATION"
+}

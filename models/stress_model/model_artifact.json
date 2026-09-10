@@ -1,0 +1,16 @@
+{
+  "model_id": "M4_BATTERY_STRESS_COST",
+  "version": "2.0.1",
+  "parameters": {
+    "alpha": 0.035,
+    "gamma": 1.32,
+    "beta": 0.018,
+    "kappa": 8.5,
+    "t_ref_c": 25.0,
+    "pack_cost_usd_kwh": 140.0,
+    "hard_temp_cutoff_c": 42.0,
+    "safe_power_kw": 25.0
+  },
+  "dataset": "NASA Thermal Impedance & C-rate Series (Kaggle)",
+  "status": "DEMO_ARTIFACT_REQUIRES_VALIDATION"
+}

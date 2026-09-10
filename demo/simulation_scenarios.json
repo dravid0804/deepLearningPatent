@@ -1,0 +1,67 @@
+[
+  {
+    "scenario_id": "SCENARIO_A_NORMAL",
+    "name": "Scenario A: Normal Base Operations",
+    "description": "8 chargers, 300 kW site limit, 8 connected/waiting EVs under nominal grid conditions.",
+    "charger_count": 8,
+    "site_power_limit_kw": 300,
+    "arriving_ev_count": 8,
+    "grid_status": "OPTIMAL",
+    "expected_wait_fifo_min": 24.5,
+    "expected_wait_antev_min": 11.2,
+    "power_violations_fifo": 2,
+    "power_violations_antev": 0
+  },
+  {
+    "scenario_id": "SCENARIO_B_PEAK_DEMAND",
+    "name": "Scenario B: Peak Demand Congestion Surge",
+    "description": "15 arriving EVs competing for 300 kW transformer limit during evening commuter peak.",
+    "charger_count": 8,
+    "site_power_limit_kw": 300,
+    "arriving_ev_count": 15,
+    "grid_status": "HIGH_LOAD",
+    "expected_wait_fifo_min": 48.0,
+    "expected_wait_antev_min": 18.5,
+    "power_violations_fifo": 7,
+    "power_violations_antev": 0
+  },
+  {
+    "scenario_id": "SCENARIO_C_GRID_STRESS",
+    "name": "Scenario C: Utility Emergency Demand Response Event",
+    "description": "Local grid issues a 150 kW load curtailment mandate. Station must protect mobility while shaving peak load.",
+    "charger_count": 8,
+    "site_power_limit_kw": 150,
+    "arriving_ev_count": 10,
+    "grid_status": "CRITICAL_EMERGENCY",
+    "expected_wait_fifo_min": 62.0,
+    "expected_wait_antev_min": 22.0,
+    "power_violations_fifo": 14,
+    "power_violations_antev": 0
+  },
+  {
+    "scenario_id": "SCENARIO_D_BATTERY_THERMAL",
+    "name": "Scenario D: High Battery Thermal Runaway Risk",
+    "description": "Multiple EVs arrive with elevated battery temperatures (>42°C). Station enforces safe power envelopes.",
+    "charger_count": 8,
+    "site_power_limit_kw": 300,
+    "arriving_ev_count": 8,
+    "grid_status": "OPTIMAL",
+    "expected_wait_fifo_min": 28.0,
+    "expected_wait_antev_min": 14.0,
+    "power_violations_fifo": 4,
+    "power_violations_antev": 0
+  },
+  {
+    "scenario_id": "SCENARIO_E_EMERGENCY_PREEMPTION",
+    "name": "Scenario E: Contextual Emergency Ambulance Preemption",
+    "description": "Emergency service vehicle arrives with 12% SOC and urgent mission. Station preempts bay and compensates delayed users.",
+    "charger_count": 8,
+    "site_power_limit_kw": 300,
+    "arriving_ev_count": 9,
+    "grid_status": "HIGH_LOAD",
+    "expected_wait_fifo_min": 36.0,
+    "expected_wait_antev_min": 15.0,
+    "power_violations_fifo": 3,
+    "power_violations_antev": 0
+  }
+]

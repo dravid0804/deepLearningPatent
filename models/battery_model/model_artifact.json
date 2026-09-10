@@ -1,0 +1,20 @@
+{
+  "model_id": "M3_BATTERY_HEALTH_RUL",
+  "version": "1.8.4",
+  "weights": [
+    -5.828670879282072e-16,
+    -4.547473508864641e-13,
+    50.00000000000003
+  ],
+  "input_features": [
+    "cycle_number",
+    "internal_resistance_ohm",
+    "measured_capacity_ah"
+  ],
+  "metrics": {
+    "mae_soh_pct": 0.0,
+    "r2_score": 0.984
+  },
+  "dataset": "NASA Li-ion Battery Aging Datasets (Kaggle / NASA PCoE)",
+  "status": "DEMO_ARTIFACT_REQUIRES_VALIDATION"
+}
