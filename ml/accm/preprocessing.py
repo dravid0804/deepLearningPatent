@@ -90,7 +90,9 @@ def load_and_preprocess_datasets(base_dir: Path) -> Tuple[pd.DataFrame, Standard
     Loads raw CSVs, harmonizes units, applies train/val/test splits,
     and returns preprocessed records and fitted scalers.
     """
-    dataset_path = base_dir / "training" / "datasets" / "ev_charging_dataset.csv"
+    dataset_path = base_dir / "datasets" / "ev_charging_dataset.csv"
+    if not dataset_path.exists():
+        dataset_path = base_dir / "training" / "datasets" / "ev_charging_dataset.csv"
     if not dataset_path.exists():
         raise FileNotFoundError(f"Dataset not found at: {dataset_path}")
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Award, BarChart3, Database, Layers, CheckCircle2, TrendingUp,
-  Cpu, FileText, ArrowRight, ShieldCheck, Scale, AlertCircle
+  Cpu, FileText, ArrowRight, ShieldCheck, Scale, AlertCircle, Download
 } from 'lucide-react';
 import { AccmService } from '../../services/models/accmService';
 
@@ -203,57 +203,70 @@ export const ResearchEvaluation: React.FC = () => {
 
       {/* 4. Real Dataset Provenance Section */}
       {activeSection === 'datasets' && (
-        <div className="algorithm-card">
-          <p className="eyebrow">TRAINING CORPUS & PROVENANCE</p>
-          <h2 className="text-xl font-extrabold text-slate-900 mb-3">Empirical Datasets Used for Training & Calibration</h2>
+        <div className="allocation-panel">
+          <div className="panel-head mb-4">
+            <div>
+              <p className="eyebrow">TRAINING CORPUS & PROVENANCE</p>
+              <h2>Empirical Datasets Used for Training & Calibration</h2>
+            </div>
+            <span className="safe-pill">
+              <Database size={14} /> Open Datasets Available
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-500 mb-5 -mt-2">
+            Download the raw telemetry datasets used to train and calibrate the Action-Conditioned Consequence Model (ACCM) and PRISM-ANT engine.
+          </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
-              <span className="badge-cyan px-2 py-0.5 rounded text-[10px] font-bold">Kaggle EV Dynamics Series</span>
-              <h4 className="font-extrabold text-sm text-slate-900">ev_charging_dataset.csv</h4>
-              <p className="text-slate-600">
-                Contains <strong>64,945 real telemetry records</strong> covering vehicle state, battery capacity (kWh),
-                charging rate (kW), station load, queue time, ambient weather, temperature, and arrival schedules.
-              </p>
-              <div className="pt-2 border-t border-slate-200 text-slate-500 font-mono text-[10px]">
-                Features: 28 columns · Resolution: Per session dynamic telemetry · Splits: 70% Train, 15% Val, 15% Test
+            {/* Main EV Charging Dataset */}
+            <div className="p-4 rounded-xl border-2 border-blue-400 bg-blue-50/40 space-y-3 flex flex-col justify-between shadow-xs">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="badge-cyan px-2 py-0.5 rounded text-[10px] font-bold">Primary Training Dataset</span>
+                  <span className="text-[10px] font-mono text-slate-500 font-bold">21.9 MB · 64,945 Rows</span>
+                </div>
+                <h4 className="font-extrabold text-sm text-slate-900">ev_charging_dataset.csv</h4>
+                <p className="text-slate-600 text-[11px] leading-relaxed">
+                  Contains <strong>64,945 real telemetry records</strong> covering vehicle state, battery capacity (kWh),
+                  charging rate (kW), station load, queue time, ambient weather, cell temperature, and arrival schedules.
+                </p>
+                <div className="pt-2 border-t border-slate-200 text-slate-500 font-mono text-[10px]">
+                  28 Columns · Resolution: Dynamic Telemetry · Splits: 70% Train, 15% Val, 15% Test
+                </div>
               </div>
+              <a
+                href="/datasets/ev_charging_dataset.csv"
+                download="ev_charging_dataset.csv"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-xs shadow-xs transition-colors"
+              >
+                <Download size={14} /> Download ev_charging_dataset.csv (21.9 MB)
+              </a>
             </div>
 
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
-              <span className="badge-emerald px-2 py-0.5 rounded text-[10px] font-bold">NASA Ames PCoE Battery Prognostics</span>
-              <h4 className="font-extrabold text-sm text-slate-900">NASA Ames Li-ion Aging Series</h4>
-              <p className="text-slate-600">
-                Contains <strong>7,565 cycle run-to-failure profiles</strong> from commercial 18650 LiCoO2 cells subjected to repeated
-                charge, discharge, and electrochemical impedance spectroscopy (EIS) measurements (Re, Rct).
-              </p>
-              <div className="pt-2 border-t border-slate-200 text-slate-500 font-mono text-[10px]">
-                Features: Capacity fade, impedance growth, thermal curves · Battery IDs: B0005, B0006, B0007, B0018
+            {/* NASA Ames Battery Aging */}
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="badge-emerald px-2 py-0.5 rounded text-[10px] font-bold">NASA Ames PCoE</span>
+                  <span className="text-[10px] font-mono text-slate-500 font-bold">849 KB · 7,565 Cycles</span>
+                </div>
+                <h4 className="font-extrabold text-sm text-slate-900">nasa_battery_aging_metadata.csv</h4>
+                <p className="text-slate-600 text-[11px] leading-relaxed">
+                  Contains <strong>7,565 cycle run-to-failure profiles</strong> from commercial 18650 LiCoO2 cells subjected to repeated
+                  charge, discharge, and electrochemical impedance spectroscopy (EIS) measurements (Re, Rct) used to ground Arrhenius degradation.
+                </p>
+                <div className="pt-2 border-t border-slate-200 text-slate-500 font-mono text-[10px]">
+                  Features: Capacity fade, impedance growth, thermal curves · Cells: B0005, B0006, B0007, B0018
+                </div>
               </div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
-              <span className="badge-amber px-2 py-0.5 rounded text-[10px] font-bold">Caltech ACN-Data Project</span>
-              <h4 className="font-extrabold text-sm text-slate-900">m1_sessions_prepared.csv</h4>
-              <p className="text-slate-600">
-                Adaptive Charging Network sessions recording arrival timestamps, departure deadlines, energy delivered (kWh),
-                and dwell durations from real workplace charging infrastructure.
-              </p>
-              <div className="pt-2 border-t border-slate-200 text-slate-500 font-mono text-[10px]">
-                Features: Connection time, disconnect time, kwh_delivered · Sites: Caltech & JPL facilities
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
-              <span className="badge-purple px-2 py-0.5 rounded text-[10px] font-bold">Station Sequential Telemetry</span>
-              <h4 className="font-extrabold text-sm text-slate-900">m2_station_demand_prepared.csv</h4>
-              <p className="text-slate-600">
-                Hourly multi-dispenser load records capturing station power draw (kW), fleet sizes, ambient temperatures,
-                and time-of-use electricity tariffs.
-              </p>
-              <div className="pt-2 border-t border-slate-200 text-slate-500 font-mono text-[10px]">
-                Features: Station load, queue times, fleet sizes, tariffs · Prediction Horizons: 1h, 2h, 4h
-              </div>
+              <a
+                href="/datasets/nasa_battery_aging_metadata.csv"
+                download="nasa_battery_aging_metadata.csv"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs shadow-xs transition-colors"
+              >
+                <Download size={14} /> Download nasa_battery_aging_metadata.csv (849 KB)
+              </a>
             </div>
           </div>
         </div>

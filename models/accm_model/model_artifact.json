@@ -1,7 +1,7 @@
 {
   "model_id": "ACCM-UNIFIED-MULTI-HORIZON",
   "version": "2.4.0",
-  "timestamp": "2026-09-10T17:37:12Z",
+  "timestamp": "2026-09-10T18:11:38Z",
   "architecture": {
     "name": "Action-Conditioned Consequence Model",
     "temporal_encoder": "Selective State Space (S6/Mamba) x 4 blocks",
@@ -65,43 +65,43 @@
   "training_metadata": {
     "dataset_rows": 64945,
     "epochs_completed": 5,
-    "final_loss": 2472.5805,
-    "training_time_sec": 120.7,
+    "final_loss": 2463.7114,
+    "training_time_sec": 127.8,
     "epoch_progression": [
       {
         "epoch": 1,
-        "train_loss": 3831.478,
-        "nll_loss": 82.6952,
-        "physics_loss": 308.1356,
-        "sacrifice_loss": 0.0271
+        "train_loss": 3802.4514,
+        "nll_loss": 80.6864,
+        "physics_loss": 309.5114,
+        "sacrifice_loss": 0.0345
       },
       {
         "epoch": 2,
-        "train_loss": 3246.9576,
-        "nll_loss": 19.9681,
-        "physics_loss": 278.5053,
-        "sacrifice_loss": 0.0068
+        "train_loss": 3176.0274,
+        "nll_loss": 23.2474,
+        "physics_loss": 334.2535,
+        "sacrifice_loss": 0.0115
       },
       {
         "epoch": 3,
-        "train_loss": 2952.2701,
-        "nll_loss": 14.1776,
-        "physics_loss": 279.5098,
-        "sacrifice_loss": 0.0056
+        "train_loss": 2920.1242,
+        "nll_loss": 12.8929,
+        "physics_loss": 225.9112,
+        "sacrifice_loss": 0.0088
       },
       {
         "epoch": 4,
-        "train_loss": 2696.6832,
-        "nll_loss": 11.8875,
-        "physics_loss": 272.0196,
-        "sacrifice_loss": 0.0076
+        "train_loss": 2654.5899,
+        "nll_loss": 11.8284,
+        "physics_loss": 258.6027,
+        "sacrifice_loss": 0.006
       },
       {
         "epoch": 5,
-        "train_loss": 2472.5805,
-        "nll_loss": 10.9902,
-        "physics_loss": 223.0475,
-        "sacrifice_loss": 0.0055
+        "train_loss": 2463.7114,
+        "nll_loss": 10.9283,
+        "physics_loss": 215.4032,
+        "sacrifice_loss": 0.0048
       }
     ]
   },
@@ -112,13 +112,13 @@
       "charging_power_kw": 50.08951249492271,
       "voltage_v": 400.0,
       "current_a": 125.22378123730677,
-      "battery_temp_c": 29.148687045671497,
+      "battery_temp_c": 29.154787102562747,
       "ambient_temp_c": 24.641106201073953,
-      "internal_resistance_ohm": 0.04499535871449086,
-      "soh": 97.14765272471605,
+      "internal_resistance_ohm": 0.045004587556112155,
+      "soh": 97.15078686954267,
       "station_load_kw": 39.98838556633819,
       "queue_time_mins": 5.015537622797985,
-      "grid_load_pct": 10.656448716990782
+      "grid_load_pct": 10.650520365567589
     },
     "stds": {
       "soc": 15.960780172619685,
@@ -126,13 +126,13 @@
       "charging_power_kw": 10.011305116930265,
       "voltage_v": 1.0,
       "current_a": 25.02826279232566,
-      "battery_temp_c": 9.496340156795409,
+      "battery_temp_c": 9.49124177930991,
       "ambient_temp_c": 9.409172633094368,
-      "internal_resistance_ohm": 0.0030152835761236545,
-      "soh": 0.6928661829625797,
+      "internal_resistance_ohm": 0.002994115403483865,
+      "soh": 0.6911548296270412,
       "station_load_kw": 9.967656199202104,
       "queue_time_mins": 4.995666573206664,
-      "grid_load_pct": 1.4299433893895033
+      "grid_load_pct": 1.4168960510590156
     },
     "mins": {
       "soc": 0.0993456919833119,
@@ -140,10 +140,10 @@
       "charging_power_kw": 10.173855291430598,
       "voltage_v": 400.0,
       "current_a": 25.434638228576496,
-      "battery_temp_c": 0.08242039596529649,
+      "battery_temp_c": 0.5450347600893028,
       "ambient_temp_c": 0.0,
-      "internal_resistance_ohm": 0.03219486296476637,
-      "soh": 93.98958419089938,
+      "internal_resistance_ohm": 0.03321835210616244,
+      "soh": 93.9595198237526,
       "station_load_kw": 0.0,
       "queue_time_mins": 4.722938254793845e-05,
       "grid_load_pct": 10.0
@@ -154,13 +154,13 @@
       "charging_power_kw": 94.06485666499552,
       "voltage_v": 400.0,
       "current_a": 235.1621416624888,
-      "battery_temp_c": 48.272091020517514,
+      "battery_temp_c": 48.39023751616349,
       "ambient_temp_c": 40.0,
-      "internal_resistance_ohm": 0.05862481095626285,
-      "soh": 100.0,
+      "internal_resistance_ohm": 0.0575214210728276,
+      "soh": 99.63690372181331,
       "station_load_kw": 75.0,
       "queue_time_mins": 53.09368486765453,
-      "grid_load_pct": 22.733639714792126
+      "grid_load_pct": 22.724417675419055
     }
   },
   "status": "TRAINED_ACCM_MODEL_READY"

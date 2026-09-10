@@ -19,12 +19,12 @@ interface Props {
 }
 
 const items = [
-  ['split', 'Station & Charge Splitting', Zap],
-  ['accm-model', 'ACCM Model & I/O', Cpu],
-  ['patent-core', 'Patent Novelty Core', FileText],
+  ['split', 'Charge Split', Zap],
+  ['accm-model', 'ACCM Model', Cpu],
+  ['patent-core', 'Patent Spec', FileText],
   ['consequence', 'Consequence Matrix', Activity],
   ['scenario-lab', 'Scenario Lab', Sliders],
-  ['research', 'Research & Benchmarks', BarChart3],
+  ['research', 'Research', BarChart3],
 ];
 
 export const Navbar: React.FC<Props> = ({
@@ -91,12 +91,11 @@ export const Navbar: React.FC<Props> = ({
     <nav className="nav-row overflow-x-auto" aria-label="Application navigation">
       {items.map(([id, label, Icon]) => {
         const I = Icon as typeof Zap;
-        const isActive = activeTab === id;
         return (
           <button
             key={id as string}
             onClick={() => setActiveTab(id as string)}
-            className={isActive ? 'active' : ''}
+            className={activeTab === id ? 'nav-item selected' : 'nav-item'}
           >
             <I size={15} />
             <span>{label as string}</span>

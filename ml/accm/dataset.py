@@ -13,7 +13,7 @@ from .schemas import CandidateAction, ACTION_INDEX_MAP, HORIZONS_MINUTES, CONSEQ
 
 class ACCMEnergyDataset(Dataset):
     """
-    Dataset yielding multi-modal input tuples and action-conditioned consequence ground truth.
+    High-performance Dataset yielding multi-modal input tuples and action-conditioned consequence ground truth.
     """
     def __init__(
         self,
@@ -21,30 +21,42 @@ class ACCMEnergyDataset(Dataset):
         seq_len: int = 60,
         augment_counterfactual: bool = True
     ):
-        self.df = df.reset_index(drop=True)
         self.seq_len = seq_len
         self.augment_counterfactual = augment_counterfactual
         self.sim = CounterfactualSimulator()
         self.actions_list = list(CandidateAction)
 
+        # Pre-extract contiguous numpy arrays for 1000x faster slicing
+        self.length = max(1, len(df) - seq_len)
+        self.soc = df["soc"].to_numpy(dtype=np.float32)
+        self.charging_power_kw = df["charging_power_kw"].to_numpy(dtype=np.float32)
+        self.battery_temp_c = df["battery_temp_c"].to_numpy(dtype=np.float32)
+        self.station_load_kw = df["station_load_kw"].to_numpy(dtype=np.float32)
+        self.grid_load_pct = df["grid_load_pct"].to_numpy(dtype=np.float32)
+        self.queue_time_mins = df["queue_time_mins"].to_numpy(dtype=np.float32)
+        self.soh = df["soh"].to_numpy(dtype=np.float32)
+        self.current_a = df["current_a"].to_numpy(dtype=np.float32)
+        self.battery_capacity_kwh = df["battery_capacity_kwh"].to_numpy(dtype=np.float32)
+        self.internal_resistance_ohm = df["internal_resistance_ohm"].to_numpy(dtype=np.float32)
+        self.voltage_v = df["voltage_v"].to_numpy(dtype=np.float32)
+        self.ambient_temp_c = df["ambient_temp_c"].to_numpy(dtype=np.float32)
+
     def __len__(self):
-        return max(1, len(self.df) - self.seq_len)
+        return self.length
 
     def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
-        # 1. Temporal sequence window (60 steps)
-        # We extract a window from idx to idx + seq_len
-        window = self.df.iloc[idx : idx + self.seq_len]
-        curr_row = window.iloc[-1]
+        end_idx = idx + self.seq_len
+        curr_idx = end_idx - 1
 
         # Temporal features (16 features per timestep)
-        t_soc = window["soc"].to_numpy(dtype=np.float32) / 100.0
-        t_power = window["charging_power_kw"].to_numpy(dtype=np.float32) / 150.0
-        t_temp = (window["battery_temp_c"].to_numpy(dtype=np.float32) - 25.0) / 25.0
-        t_station = window["station_load_kw"].to_numpy(dtype=np.float32) / 500.0
-        t_grid = window["grid_load_pct"].to_numpy(dtype=np.float32) / 100.0
-        t_queue = window["queue_time_mins"].to_numpy(dtype=np.float32) / 60.0
-        t_soh = window["soh"].to_numpy(dtype=np.float32) / 100.0
-        t_current = window["current_a"].to_numpy(dtype=np.float32) / 375.0
+        t_soc = self.soc[idx:end_idx] / 100.0
+        t_power = self.charging_power_kw[idx:end_idx] / 150.0
+        t_temp = (self.battery_temp_c[idx:end_idx] - 25.0) / 25.0
+        t_station = self.station_load_kw[idx:end_idx] / 500.0
+        t_grid = self.grid_load_pct[idx:end_idx] / 100.0
+        t_queue = self.queue_time_mins[idx:end_idx] / 60.0
+        t_soh = self.soh[idx:end_idx] / 100.0
+        t_current = self.current_a[idx:end_idx] / 375.0
 
         # Construct 16-channel sequence
         zeros = np.zeros(self.seq_len, dtype=np.float32)
@@ -54,29 +66,28 @@ class ACCMEnergyDataset(Dataset):
         ])  # [60, 16]
 
         # 2. Graph Nodes (6 nodes x 16 features)
-        # 0: EV, 1: Battery, 2: Charger, 3: Station, 4: Grid, 5: Renewable
         graph_nodes = np.zeros((6, 16), dtype=np.float32)
-        graph_nodes[0, 0] = curr_row["soc"] / 100.0
-        graph_nodes[0, 1] = curr_row["battery_capacity_kwh"] / 100.0
-        graph_nodes[1, 2] = (curr_row["battery_temp_c"] - 25.0) / 25.0
-        graph_nodes[1, 3] = curr_row["internal_resistance_ohm"] * 10.0
-        graph_nodes[2, 4] = curr_row["charging_power_kw"] / 150.0
-        graph_nodes[3, 5] = curr_row["station_load_kw"] / 500.0
-        graph_nodes[3, 6] = curr_row["queue_time_mins"] / 60.0
-        graph_nodes[4, 7] = curr_row["grid_load_pct"] / 100.0
+        graph_nodes[0, 0] = self.soc[curr_idx] / 100.0
+        graph_nodes[0, 1] = self.battery_capacity_kwh[curr_idx] / 100.0
+        graph_nodes[1, 2] = (self.battery_temp_c[curr_idx] - 25.0) / 25.0
+        graph_nodes[1, 3] = self.internal_resistance_ohm[curr_idx] * 10.0
+        graph_nodes[2, 4] = self.charging_power_kw[curr_idx] / 150.0
+        graph_nodes[3, 5] = self.station_load_kw[curr_idx] / 500.0
+        graph_nodes[3, 6] = self.queue_time_mins[curr_idx] / 60.0
+        graph_nodes[4, 7] = self.grid_load_pct[curr_idx] / 100.0
         graph_nodes[5, 8] = 0.65  # Renewable ratio estimate
 
         # 3. Physics features (9 features)
         physics_feat = np.array([
-            curr_row["soc"],
-            curr_row["battery_capacity_kwh"],
-            curr_row["charging_power_kw"],
-            curr_row["current_a"],
-            curr_row["voltage_v"],
-            curr_row["battery_temp_c"],
-            curr_row["internal_resistance_ohm"],
-            curr_row["soh"],
-            max(0.0, 100.0 - curr_row["soh"])
+            self.soc[curr_idx],
+            self.battery_capacity_kwh[curr_idx],
+            self.charging_power_kw[curr_idx],
+            self.current_a[curr_idx],
+            self.voltage_v[curr_idx],
+            self.battery_temp_c[curr_idx],
+            self.internal_resistance_ohm[curr_idx],
+            self.soh[curr_idx],
+            max(0.0, 100.0 - float(self.soh[curr_idx]))
         ], dtype=np.float32)
 
         # 4. Negotiation context (6 continuous + 1 discrete)
@@ -96,14 +107,14 @@ class ACCMEnergyDataset(Dataset):
 
         # 6. Generate physical consequences and sacrifice vector ground truth via physics simulator
         state_dict = {
-            "soc": curr_row["soc"],
-            "battery_capacity_kwh": curr_row["battery_capacity_kwh"],
-            "charging_power_kw": curr_row["charging_power_kw"],
-            "battery_temp_c": curr_row["battery_temp_c"],
-            "ambient_temp_c": curr_row["ambient_temp_c"],
-            "soh": curr_row["soh"],
-            "station_load_kw": curr_row["station_load_kw"],
-            "grid_load_pct": curr_row["grid_load_pct"]
+            "soc": float(self.soc[curr_idx]),
+            "battery_capacity_kwh": float(self.battery_capacity_kwh[curr_idx]),
+            "charging_power_kw": float(self.charging_power_kw[curr_idx]),
+            "battery_temp_c": float(self.battery_temp_c[curr_idx]),
+            "ambient_temp_c": float(self.ambient_temp_c[curr_idx]),
+            "soh": float(self.soh[curr_idx]),
+            "station_load_kw": float(self.station_load_kw[curr_idx]),
+            "grid_load_pct": float(self.grid_load_pct[curr_idx])
         }
         cf_result = self.sim.simulate_action_trajectory(state_dict, selected_action, HORIZONS_MINUTES)
 
@@ -135,8 +146,8 @@ class ACCMEnergyDataset(Dataset):
             "action_idx": torch.tensor(action_idx, dtype=torch.long),
             "y_targets": torch.tensor(y_targets, dtype=torch.float32),
             "y_sacrifice": torch.tensor(y_sacrifice, dtype=torch.float32),
-            "initial_soc": torch.tensor([curr_row["soc"]], dtype=torch.float32),
-            "battery_capacity": torch.tensor([curr_row["battery_capacity_kwh"]], dtype=torch.float32),
-            "applied_power": torch.tensor([curr_row["charging_power_kw"]], dtype=torch.float32),
-            "ambient_temp": torch.tensor([curr_row["ambient_temp_c"]], dtype=torch.float32),
+            "initial_soc": torch.tensor([self.soc[curr_idx]], dtype=torch.float32),
+            "battery_capacity": torch.tensor([self.battery_capacity_kwh[curr_idx]], dtype=torch.float32),
+            "applied_power": torch.tensor([self.charging_power_kw[curr_idx]], dtype=torch.float32),
+            "ambient_temp": torch.tensor([self.ambient_temp_c[curr_idx]], dtype=torch.float32),
         }

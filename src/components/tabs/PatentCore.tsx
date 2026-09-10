@@ -1,89 +1,88 @@
 import React, { useState } from 'react';
 import {
-  ShieldCheck, Cpu, ArrowRight, Activity, GitBranch, Layers, Scale,
-  Flame, BatteryCharging, Clock, AlertTriangle, ChevronDown, ChevronUp,
-  FileCheck, HelpCircle, CheckCircle2, Lock, Zap
+  GitBranch, ShieldCheck, Activity, Cpu, Scale, Lock, Zap,
+  CheckCircle2, ArrowRight, ArrowDown, ChevronDown, ChevronUp,
+  FileCheck, Layers, Award, AlertCircle, FileText, CornerDownLeft
 } from 'lucide-react';
 
-interface FeatureCardProps {
+interface TechnicalFeature {
   number: string;
   title: string;
   summary: string;
   details: string[];
-  equation?: string;
   patentFocus: string;
+  equation?: string;
 }
 
-const TECHNICAL_FEATURES: FeatureCardProps[] = [
+const TECHNICAL_FEATURES: TechnicalFeature[] = [
   {
     number: '01',
     title: 'Unified Multi-Modal State Representation',
-    summary: 'Replaces six isolated heuristic models with a joint embedding space capturing temporal dynamics, spatial topology, and physics.',
+    summary: 'Synthesizes time-series battery telemetry, station graph topology, and grid states into one coherent schema without information loss.',
     details: [
-      'Ingests continuous 60-minute historical telemetry sequence, station-grid graph topology, and electro-thermal state.',
-      'Prevents information fragmentation across separate regressors and unifies EV, battery, station, and grid features.',
-      'Produces a 256-dimensional shared latent state vector Z_shared preserving relational provenance.'
+      'Ingests a 60-step temporal window (T=60) containing battery SOC, voltage, current, internal resistance, and core cell temperature.',
+      'Constructs a 6-node relational graph capturing bay-level competition, transformer capacity limits, and local solar/wind availability.',
+      'Replaces fragmented point-prediction pipelines with an integrated multi-modal state matrix.'
     ],
-    patentFocus: 'Single multi-modal state embedding eliminating error propagation between disparate predictors.'
+    patentFocus: 'Cross-domain state fusion uniting electrochemical battery dynamics with electrical distribution topology.'
   },
   {
     number: '02',
     title: 'Action-Conditioned Consequence Prediction',
-    summary: 'Evaluates candidate actions individually to answer "What happens if action A is chosen?" rather than predicting a single passive trajectory.',
+    summary: 'Predicts the future consequences of candidate energy actions rather than just predicting passive system trajectories.',
     details: [
-      'Projects 7 discrete candidate actions (FAST, STANDARD, DELAY, REDUCE, RESERVE, REDIRECT, V2G) into learnable embedding space E_A.',
-      'Fuses Z_shared with E_A before decoding to calculate counterfactual future branches.',
-      'Enables active decision exploration without committing hardware or risking physical station overload.'
+      'Conditions future state estimation on candidate actions a in [CHARGE_NOW_FAST, CHARGE_NOW_STANDARD, COOPERATIVE_DELAY, REDUCE_POWER, V2G_EXPORT].',
+      'Enables the station controller to ask "What happens to battery degradation and grid stress if action a is chosen?" before committing.',
+      'Learns an action-conditioned consequence operator F_theta(S_t, a) -> Y_{t+H}.'
     ],
-    equation: 'F_θ(S_t, a_k) → { Y_{t+h}(a_k), \vec{S}(a_k), \vec{\sigma}(a_k) }',
-    patentFocus: 'Action-conditioned branching prediction coupling discrete negotiation proposals with physical response manifolds.'
+    equation: 'Y_{t+H}^{(a)} = F_θ(S_t, a)  ∀ a ∈ A,  H ∈ {5m, 10m, 15m, 30m, 60m}',
+    patentFocus: 'Forward simulation of discrete candidate energy actions prior to negotiation commitment.'
   },
   {
     number: '03',
     title: 'Multi-Horizon Future Consequence Modeling',
-    summary: 'Predicts consequence trajectories across five synchronized temporal horizons (5m, 10m, 15m, 30m, 60m).',
+    summary: 'Forecasts system evolution across five operational time horizons simultaneously.',
     details: [
-      'Decodes 11 simultaneous physical and economic variables at each horizon.',
-      'Enables PRISM-ANT to anticipate downstream congestion 30 to 60 minutes before queue saturation occurs.',
-      'Allows cooperative delay actions to be scheduled during low-tariff, high-renewable solar windows.'
+      'Simultaneously outputs physical states at 5, 10, 15, 30, and 60 minutes into the future.',
+      'Short horizons (5m, 15m) capture steep Joule heating and sudden local substation congestion.',
+      'Long horizons (30m, 60m) capture cumulative battery capacity degradation and trip departure readiness.'
     ],
-    patentFocus: 'Multi-step synchronous trajectory forecasting covering immediate thermal shocks and long-term grid peaks.'
+    patentFocus: 'Multi-scale temporal consequence modeling providing both transient and cumulative impacts to negotiation.'
   },
   {
     number: '04',
-    title: 'Learned Action-Specific Sacrifice Representation',
-    summary: 'Maps complex multi-dimensional physical stress into a normalized 8-attribute sacrifice vector consumed by negotiation logic.',
+    title: 'Learned Action-Specific Sacrifice Vector',
+    summary: 'Synthesizes multi-dimensional physical impacts into a standardized 8-dimensional sacrifice vector consumed by PRISM-ANT.',
     details: [
-      'Predicts components: [battery, degradation, thermal, grid, waiting, energy, future_availability, fairness].',
-      'Transforms raw physical telemetry into an economic and utility exchange currency.',
-      'Enables peer-to-peer cooperative trade-offs without revealing raw driver telemetry or battery specs.'
+      'Maps high-dimensional consequences into S_a = [battery, degradation, thermal, grid, waiting, cost, availability, fairness].',
+      'Quantifies exactly what an EV driver or the power grid surrenders when selecting action a.',
+      'PRISM-ANT reads this vector directly to calculate equitable reciprocity trades without touching raw neural weights.'
     ],
-    equation: '\\vec{S}_a = [s_{\\text{bat}}, s_{\\text{deg}}, s_{\\text{th}}, s_{\\text{grid}}, s_{\\text{wait}}, s_{\\text{eng}}, s_{\\text{avail}}, s_{\\text{fair}}]^T \\in [0, 1]^8',
-    patentFocus: 'Vectorized action sacrifice currency bridging deep-learning consequence models with game-theoretic negotiation.'
+    equation: 'S_a = [S_batt, S_deg, S_therm, S_grid, S_wait, S_cost, S_avail, S_fair]^T ∈ [0, 1]^8',
+    patentFocus: 'Standardized multi-attribute sacrifice representation linking predictive deep learning with game-theoretic negotiation.'
   },
   {
     number: '05',
-    title: 'Physics-Aware Deep Learning Constraints',
-    summary: 'Hardwires physical conservation laws and Arrhenius thermal degradation directly into the neural loss function.',
+    title: 'Physics-Aware Deep Learning Formulation',
+    summary: 'Embeds first-principle electrochemical and electrical conservation laws directly into the neural loss function.',
     details: [
-      'Enforces state-of-charge conservation: ΔSOC ≈ (η · P · Δt) / C_pack during all training epochs.',
-      'Penalizes physically implausible spontaneous thermal drops and negative battery degradation.',
-      'Constrains transformer power allocations to maximum feeder capacity limits.'
+      'Enforces Ampere-hour conservation: SOC(t+1) ≈ SOC(t) + η P Δt / C_batt.',
+      'Penalizes thermodynamically impossible cell cooling during 350 kW charging via Joule heating constraints.',
+      'Strictly prohibits negative battery degradation via Arrhenius capacity fade loss penalties.'
     ],
-    equation: '\\mathcal{L}_{\\text{physics}} = \\lambda_{\\text{soc}} \\mathcal{L}_{\\text{SOC}} + \\lambda_{\\text{th}} \\mathcal{L}_{\\text{thermal}} + \\lambda_{\\text{deg}} \\mathcal{L}_{\\text{deg}}',
-    patentFocus: 'Electro-thermal and energy conservation penalty terms preventing physically impossible model hallucinations.'
+    equation: 'L_total = L_NLL + λ_soc L_soc + λ_therm L_thermal + λ_deg L_degradation + λ_grid L_grid',
+    patentFocus: 'Loss formulations enforcing electro-thermal battery physics and distribution transformer constraints.'
   },
   {
     number: '06',
     title: 'Heteroscedastic Predictive Uncertainty',
-    summary: 'Outputs predictive distribution parameters (mean μ and log-variance log σ²) to quantify risk for every candidate action.',
+    summary: 'Outputs calibrated input-dependent predictive mean and variance for every continuous physical parameter.',
     details: [
-      'Trained via Gaussian Negative Log-Likelihood (NLL) to capture data noise and model confidence.',
-      'Computes calibrated confidence percentage scores (e.g. 94% confidence at 5m, 81% at 60m).',
-      'Allows PRISM-ANT to apply risk-averse allocation margins when high uncertainty is detected.'
+      'Rather than outputting dangerous overconfident point estimates, ACCM models Gaussian probability distributions N(μ, σ²).',
+      'During extreme grid transients or rare battery temperatures, high uncertainty flags conservative negotiation policies.',
+      'Trained via Gaussian Negative Log-Likelihood (NLL) loss for reliable calibration.'
     ],
-    equation: '\\mathcal{L}_{\\text{NLL}} = \\frac{1}{2} \\exp(-s) (y - \\mu)^2 + \\frac{1}{2} s, \\quad s = \\log(\\sigma^2)',
-    patentFocus: 'Aleatoric uncertainty estimation enabling confidence-weighted priority scoring during negotiation.'
+    patentFocus: 'State-dependent epistemic and aleatoric uncertainty estimation for autonomous high-voltage power switching.'
   },
   {
     number: '07',
@@ -94,7 +93,7 @@ const TECHNICAL_FEATURES: FeatureCardProps[] = [
       'A physics-grounded simulation layer synthesizes counterfactual futures for all 7 candidate actions.',
       'Ensures the model accurately learns consequence differentials between aggressive charging and cooperative concessions.'
     ],
-    patentFocus: 'Counterfactual trajectory generation pipeline resolving observational bias in observational EV datasets.'
+    patentFocus: 'Counterfactual trajectory generation pipeline resolving observational bias in EV charging datasets.'
   },
   {
     number: '08',
@@ -112,9 +111,9 @@ const TECHNICAL_FEATURES: FeatureCardProps[] = [
     title: 'Deterministic Hard Safety & Physics Gate',
     summary: 'A non-bypassable safety barrier that unconditionally verifies and clamps power allocations prior to dispenser actuation.',
     details: [
-      'Strict Thermal Guard: If battery temperature T_bat ≥ 42.0°C, fast charging is instantly blocked and throttled to ≤ 25 kW.',
+      'Strict Thermal Guard: If battery temperature T_bat ≥ 42.0°C, fast charging is instantly blocked and throttled to ≤ 22 kW.',
       'Transformer Capacity Guard: The sum of dispenser draws cannot exceed local feeder rating: Σ P_i ≤ P_station,max.',
-      'Hardware Fault Isolation: Ground fault and OCPP disconnect immediately isolated independently of AI state.'
+      'Hardware Fault Isolation: Ground fault and emergency disconnects are triggered independently of AI state.'
     ],
     patentFocus: 'Deterministic physical safety interlocking layer with absolute priority over deep learning and negotiation outputs.'
   },
@@ -134,14 +133,16 @@ const TECHNICAL_FEATURES: FeatureCardProps[] = [
 export const PatentCore: React.FC = () => {
   const [expandedFeature, setExpandedFeature] = useState<string | null>('02');
   const [selectedClaimNode, setSelectedClaimNode] = useState<string>('accm');
-  const [activeTab, setActiveTab] = useState<'architecture' | 'features' | 'claims' | 'novelty'>('architecture');
+  const [activeTab, setActiveTab] = useState<'architecture' | 'features' | 'novelty' | 'claims'>('architecture');
 
   return (
     <div className="focused-page">
-      {/* Hero Section */}
+      {/* 1. Header Hero */}
       <section className="split-hero">
         <div>
-          <p className="eyebrow"><span className="live-dot" /> PROPOSED PATENT ARCHITECTURE · CANDIDATE INVENTIVE CORE</p>
+          <p className="eyebrow">
+            <span className="live-dot" /> PROPOSED PATENT ARCHITECTURE · INVENTIVE SPECIFICATION DISCLOSURE
+          </p>
           <h1>Autonomous EV Energy Negotiation with Action-Conditioned Consequence Intelligence</h1>
           <p>
             A unified predictive intelligence layer (ACCM) supplies multi-horizon, action-specific consequence
@@ -149,283 +150,453 @@ export const PatentCore: React.FC = () => {
           </p>
         </div>
         <div className="split-total">
-          <span>System Status</span>
-          <strong>PATENT CORE</strong>
-          <small>10 Technical Features · Claims 1–12 Mapped</small>
+          <span>Disclosure Status</span>
+          <strong>PATENT SPEC</strong>
+          <small>10 Inventive Modules · Claims 1–12 Mapped</small>
         </div>
       </section>
 
-      {/* Navigation Sub-Tabs */}
-      <div className="flex gap-2 border-b border-slate-200 pb-2">
+      {/* 2. Top Summary Metrics Bar (Aligned with Visual Identity) */}
+      <section className="split-summary">
+        <div>
+          <b>10 Modules</b>
+          <span>Candidate inventive technical features</span>
+        </div>
+        <div>
+          <b>5-Stage Pipeline</b>
+          <span>Closed-loop decoupled architecture</span>
+        </div>
+        <div>
+          <b>Claims 1–12</b>
+          <span>Independent & dependent claims mapped</span>
+        </div>
+        <div>
+          <b>Hard Gate</b>
+          <span>Deterministic non-bypassable safety</span>
+        </div>
+      </section>
+
+      {/* 3. Navigation Sub-Tabs (Clean Segmented Pill Container) */}
+      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-white border border-slate-200 rounded-xl shadow-xs">
         <button
           onClick={() => setActiveTab('architecture')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${activeTab === 'architecture' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'}`}
+          className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+            activeTab === 'architecture'
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
         >
-          <GitBranch className="inline-block mr-1.5 w-3.5 h-3.5" /> Closed-Loop Architecture
+          <GitBranch size={14} /> Closed-Loop Architecture
         </button>
         <button
           onClick={() => setActiveTab('features')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${activeTab === 'features' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'}`}
+          className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+            activeTab === 'features'
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
         >
-          <Layers className="inline-block mr-1.5 w-3.5 h-3.5" /> 10 Technical Features
+          <Layers size={14} /> 10 Technical Features
         </button>
         <button
           onClick={() => setActiveTab('novelty')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${activeTab === 'novelty' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'}`}
+          className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+            activeTab === 'novelty'
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
         >
-          <Scale className="inline-block mr-1.5 w-3.5 h-3.5" /> Core Research Contribution
+          <Scale size={14} /> Core Research Contribution
         </button>
         <button
           onClick={() => setActiveTab('claims')}
-          className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors ${activeTab === 'claims' ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'}`}
+          className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+            activeTab === 'claims'
+              ? 'bg-blue-600 text-white shadow-sm'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+          }`}
         >
-          <FileCheck className="inline-block mr-1.5 w-3.5 h-3.5" /> Patent Claim Explorer
+          <FileCheck size={14} /> Patent Claim Explorer
         </button>
       </div>
 
-      {/* 1. Closed-Loop Architecture Visual */}
+      {/* 4. Closed-Loop Architecture View */}
       {activeTab === 'architecture' && (
         <div className="space-y-6">
-          <div className="algorithm-card">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div className="allocation-panel">
+            <div className="panel-head mb-4">
               <div>
-                <p className="eyebrow">INTERACTIVE SYSTEM FLOW</p>
-                <h2 className="text-xl font-extrabold text-slate-900">Decoupled Prediction-to-Negotiation Feedback Architecture</h2>
+                <p className="eyebrow">DECOUPLED 5-STAGE CLOSED-LOOP PIPELINE</p>
+                <h2>Prediction-to-Negotiation Closed-Loop System Architecture</h2>
               </div>
-              <span className="safe-pill"><ShieldCheck size={16} /> Three Separated Responsibilities</span>
+              <span className="safe-pill">
+                <ShieldCheck size={14} /> Three Separated Responsibilities
+              </span>
             </div>
 
-            {/* Interactive Architecture Flowchart */}
-            <div className="py-6 px-2 overflow-x-auto">
-              <div className="min-w-[850px] grid grid-cols-5 gap-3 items-center">
-                {/* Stage 1 */}
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-blue-100 text-blue-600 grid place-items-center mb-2">
-                    <Activity size={18} />
+            <p className="text-xs text-slate-500 mb-6 -mt-2">
+              The architecture establishes three non-overlapping layers: (1) Deep-Learning Predictive Forward Simulation (ACCM), 
+              (2) Reciprocal Multi-Agent Negotiation (PRISM-ANT), and (3) Inviolable Hardware Physical Protection (Safety Gate).
+            </p>
+
+            {/* Perfectly Aligned 5-Stage Pipeline */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-stretch">
+              {/* Stage 1: Digital Twin */}
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-3">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                    <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">Stage 1</span>
+                    <div className="w-6 h-6 rounded-md bg-blue-100 text-blue-700 grid place-items-center">
+                      <Activity size={13} />
+                    </div>
                   </div>
-                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Step 1 · Observation</span>
-                  <h4 className="font-extrabold text-slate-800 text-sm mt-1">EV Digital Twin</h4>
-                  <p className="text-[11px] text-slate-500 mt-1">Telemetry, SOC, Temp, SOH, Queue Dwell, Route</p>
+                  <h4 className="font-extrabold text-slate-900 text-xs mt-2">Observation</h4>
+                  <p className="text-[11px] font-semibold text-slate-700 mt-0.5">EV & Station Twin</p>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                    Collects 60-step temporal telemetry: battery SOC, voltage, current, cell temp, driver deadline, and site load.
+                  </p>
                 </div>
-
-                <div className="text-center text-slate-400 font-bold">
-                  <ArrowRight className="mx-auto" size={20} />
-                  <span className="text-[9px] uppercase tracking-wider block mt-1">State Vector S_t</span>
-                </div>
-
-                {/* Stage 2 */}
-                <div className="p-4 rounded-xl bg-blue-50 border-2 border-blue-500 text-center relative shadow-sm">
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
-                    UNIFIED AI
-                  </span>
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-blue-600 text-white grid place-items-center mb-2 shadow">
-                    <Cpu size={18} />
-                  </div>
-                  <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">Step 2 · Prediction</span>
-                  <h4 className="font-extrabold text-slate-900 text-sm mt-1">ACCM Model</h4>
-                  <p className="text-[11px] text-slate-600 mt-1">Temporal SSM + Graph + Physics + Action Conditioning</p>
-                </div>
-
-                <div className="text-center text-slate-400 font-bold">
-                  <ArrowRight className="mx-auto" size={20} />
-                  <span className="text-[9px] uppercase tracking-wider block mt-1">Consequence & \vec{`{S}`}_a</span>
-                </div>
-
-                {/* Stage 3 */}
-                <div className="p-4 rounded-xl bg-purple-50 border border-purple-200 text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-purple-100 text-purple-700 grid place-items-center mb-2">
-                    <Scale size={18} />
-                  </div>
-                  <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Step 3 · Negotiation</span>
-                  <h4 className="font-extrabold text-slate-800 text-sm mt-1">PRISM-ANT Engine</h4>
-                  <p className="text-[11px] text-slate-500 mt-1">Reciprocity Memory Ledger + Priority Water-Filling</p>
+                <div className="pt-2 border-t border-slate-200 text-[10px] text-slate-700 font-mono">
+                  Output: <b>S_t</b> (Multi-Modal State Tensor)
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-5 gap-3 items-center">
-                <div className="col-start-3 text-center text-slate-400 font-bold">
-                  <ArrowRight className="mx-auto rotate-90" size={20} />
-                  <span className="text-[9px] uppercase tracking-wider block mt-1">Negotiated Action Proposal</span>
+              {/* Stage 2: ACCM */}
+              <div className="p-3.5 rounded-xl bg-blue-50/70 border-2 border-blue-500 flex flex-col justify-between space-y-3 relative shadow-xs">
+                <span className="absolute -top-2.5 right-2 bg-blue-600 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-full uppercase">
+                  ACCM 1.23M
+                </span>
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-blue-200">
+                    <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider">Stage 2</span>
+                    <div className="w-6 h-6 rounded-md bg-blue-600 text-white grid place-items-center">
+                      <Cpu size={13} />
+                    </div>
+                  </div>
+                  <h4 className="font-extrabold text-slate-900 text-xs mt-2">Prediction</h4>
+                  <p className="text-[11px] font-semibold text-blue-900 mt-0.5">ACCM Neural Model</p>
+                  <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                    Evaluates 7 actions across 5 horizons. Outputs physical consequences and the 8-dim Sacrifice Vector (S_a).
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-blue-200 text-[10px] text-blue-900 font-mono font-bold">
+                  Output: <b>S_a ∈ [0, 1]⁸</b>
                 </div>
               </div>
 
-              <div className="min-w-[850px] grid grid-cols-5 gap-3 items-center">
-                <div className="col-start-2 col-span-3 p-4 rounded-xl bg-emerald-50 border-2 border-emerald-500 text-center relative shadow-sm">
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
-                    NON-BYPASSABLE
-                  </span>
-                  <div className="flex items-center justify-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white grid place-items-center shadow">
-                      <Lock size={18} />
-                    </div>
-                    <div className="text-left">
-                      <h4 className="font-extrabold text-slate-900 text-sm">Deterministic Hard Safety & Physics Gate</h4>
-                      <p className="text-[11px] text-slate-600">
-                        Thermal Guard (T_bat &lt; 42.0°C) · Transformer Cap (Σ P_i ≤ P_max) · Feeder Overload Protection
-                      </p>
+              {/* Stage 3: PRISM-ANT */}
+              <div className="p-3.5 rounded-xl bg-purple-50/70 border border-purple-200 flex flex-col justify-between space-y-3">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-purple-200">
+                    <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wider">Stage 3</span>
+                    <div className="w-6 h-6 rounded-md bg-purple-100 text-purple-700 grid place-items-center">
+                      <Scale size={13} />
                     </div>
                   </div>
+                  <h4 className="font-extrabold text-slate-900 text-xs mt-2">Negotiation</h4>
+                  <p className="text-[11px] font-semibold text-purple-900 mt-0.5">PRISM-ANT Engine</p>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                    Reads S_a and balances it against driver credit ledgers. Allocates power based on historical concessions and equity.
+                  </p>
                 </div>
-
-                <div className="text-center text-slate-400 font-bold">
-                  <ArrowRight className="mx-auto" size={20} />
-                  <span className="text-[9px] uppercase tracking-wider block mt-1">Safe Power Command</span>
+                <div className="pt-2 border-t border-purple-200 text-[10px] text-purple-900 font-mono">
+                  Output: <b>P_proposed</b>
                 </div>
+              </div>
 
-                {/* Stage 5 */}
-                <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-center">
-                  <div className="w-8 h-8 mx-auto rounded-lg bg-amber-100 text-amber-700 grid place-items-center mb-2">
-                    <Zap size={18} />
+              {/* Stage 4: Deterministic Safety Gate */}
+              <div className="p-3.5 rounded-xl bg-emerald-50 border-2 border-emerald-500 flex flex-col justify-between space-y-3 relative shadow-xs">
+                <span className="absolute -top-2.5 right-2 bg-emerald-600 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-full uppercase">
+                  Hard Barrier
+                </span>
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-emerald-200">
+                    <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Stage 4</span>
+                    <div className="w-6 h-6 rounded-md bg-emerald-600 text-white grid place-items-center">
+                      <Lock size={13} />
+                    </div>
                   </div>
-                  <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Step 4 · Actuation</span>
-                  <h4 className="font-extrabold text-slate-800 text-sm mt-1">Dispenser Hardware</h4>
-                  <p className="text-[11px] text-slate-500 mt-1">Power delivery to vehicle; feedback loops to Step 1.</p>
+                  <h4 className="font-extrabold text-slate-900 text-xs mt-2">Protection</h4>
+                  <p className="text-[11px] font-semibold text-emerald-900 mt-0.5">Hardware Safety Gate</p>
+                  <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                    Unconditionally clamps power if battery temp ≥ 42.0°C or if site transformer capacity (Σ P_i ≤ P_max) is breached.
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-emerald-200 text-[10px] text-emerald-900 font-mono font-bold">
+                  Output: <b>P_safe (kW)</b>
+                </div>
+              </div>
+
+              {/* Stage 5: Hardware Dispensers */}
+              <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200 flex flex-col justify-between space-y-3">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-amber-200">
+                    <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Stage 5</span>
+                    <div className="w-6 h-6 rounded-md bg-amber-100 text-amber-700 grid place-items-center">
+                      <Zap size={13} />
+                    </div>
+                  </div>
+                  <h4 className="font-extrabold text-slate-900 text-xs mt-2">Actuation</h4>
+                  <p className="text-[11px] font-semibold text-amber-900 mt-0.5">Bay Dispensers</p>
+                  <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                    Dispensers actuate verified power levels across bays. Actual energy delivered and thermal evolution are recorded.
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-amber-200 text-[10px] text-amber-900 font-mono">
+                  Output: <b>Power Delivery</b>
                 </div>
               </div>
             </div>
 
-            {/* Core Architectural Rule Box */}
-            <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-200 text-slate-700 text-xs leading-relaxed mt-4">
-              <strong className="text-blue-900 block font-bold mb-1">Mandatory Architectural Principle:</strong>
-              <p>
-                The neural network (ACCM) does <strong>not</strong> decide the charging rate or select the winning EV.
-                Instead, ACCM predicts the consequences and sacrifice for each candidate action.
-                The independent algorithm (PRISM-ANT) evaluates these sacrifices using reciprocity memory to determine fairness.
-                Finally, a deterministic safety gate ensures that no machine-learning error or negotiation proposal can violate physical battery or grid bounds.
-              </p>
+            {/* Closed-Loop Sensory Feedback Channel */}
+            <div className="mt-4 p-3 rounded-xl bg-slate-100 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 text-slate-700 font-bold">
+                <CornerDownLeft size={16} className="text-blue-600 flex-none" />
+                <span>Closed-Loop Telemetry Return Loop:</span>
+              </div>
+              <span className="text-slate-600 text-[11px]">
+                Actual charging telemetry (ΔSOC, Cell Temp, Grid Draw) feeds back into Stage 1 (Digital Twin) every 15 seconds to eliminate prediction drift.
+              </span>
+              <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold font-mono">
+                Continuous Closed-Loop
+              </span>
+            </div>
+
+            {/* Tripartite Separation Matrix */}
+            <div className="mt-6 pt-6 border-t border-slate-200">
+              <h3 className="text-sm font-extrabold text-slate-900 mb-3">
+                Tripartite Separation of Responsibilities (Patent Core Principle)
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                {/* Layer 1 */}
+                <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/50 space-y-2">
+                  <div className="flex items-center gap-2 text-blue-900 font-extrabold text-xs">
+                    <Cpu size={14} className="text-blue-600" />
+                    <span>Layer 1: ACCM Neural Model</span>
+                  </div>
+                  <div className="space-y-1.5 text-slate-600 text-[11px] leading-relaxed">
+                    <p><b className="text-emerald-700">What it DOES:</b> Predicts consequences (SOC, temp, degradation, grid load) and outputs normalized sacrifice vector S_a with calibrated uncertainty.</p>
+                    <p><b className="text-rose-700">What it NEVER DOES:</b> Never unilaterally awards power, never overrides fairness credits, never acts as an uninspectable decision black box.</p>
+                  </div>
+                </div>
+
+                {/* Layer 2 */}
+                <div className="p-4 rounded-xl border border-purple-200 bg-purple-50/50 space-y-2">
+                  <div className="flex items-center gap-2 text-purple-900 font-extrabold text-xs">
+                    <Scale size={14} className="text-purple-600" />
+                    <span>Layer 2: PRISM-ANT Algorithm</span>
+                  </div>
+                  <div className="space-y-1.5 text-slate-600 text-[11px] leading-relaxed">
+                    <p><b className="text-emerald-700">What it DOES:</b> Balances driver utility tokens, historical reciprocity concessions, and contractual fairness using transparent game-theoretic rules.</p>
+                    <p><b className="text-rose-700">What it NEVER DOES:</b> Never computes physical electrochemical dynamics directly (relies on ACCM's physics-informed predictions).</p>
+                  </div>
+                </div>
+
+                {/* Layer 3 */}
+                <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 space-y-2">
+                  <div className="flex items-center gap-2 text-emerald-900 font-extrabold text-xs">
+                    <Lock size={14} className="text-emerald-600" />
+                    <span>Layer 3: Deterministic Safety Gate</span>
+                  </div>
+                  <div className="space-y-1.5 text-slate-600 text-[11px] leading-relaxed">
+                    <p><b className="text-emerald-700">What it DOES:</b> Intercepts all negotiated power proposals; unconditionally clamps power if T_bat ≥ 42.0°C or transformer capacity is exceeded.</p>
+                    <p><b className="text-rose-700">What it NEVER DOES:</b> Cannot be bypassed by machine-learning outputs, optimization algorithms, or driver priority status.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* 2. 10 Technical Features Section */}
+      {/* 5. 10 Technical Features View */}
       {activeTab === 'features' && (
-        <div className="space-y-3">
-          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm mb-4">
-            <p className="eyebrow">RESEARCH DISCLOSURE MODULES</p>
-            <h2 className="text-xl font-extrabold text-slate-900">Ten Candidate Inventive Technical Modules</h2>
-            <p className="text-xs text-slate-500 mt-1">Click on each module to view mathematical formulations, technical details, and patent focus.</p>
-          </div>
-
-          <div className="space-y-3">
-            {TECHNICAL_FEATURES.map((feat) => {
-              const isOpen = expandedFeature === feat.number;
-              return (
-                <div key={feat.number} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition-all">
-                  <button
-                    onClick={() => setExpandedFeature(isOpen ? null : feat.number)}
-                    className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 font-extrabold text-sm grid place-items-center flex-none border border-blue-200">
-                        {feat.number}
-                      </span>
-                      <div>
-                        <h3 className="text-sm font-extrabold text-slate-900">{feat.title}</h3>
-                        <p className="text-xs text-slate-500 mt-0.5">{feat.summary}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Module {feat.number}</span>
-                      {isOpen ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
-                    </div>
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs">
-                      <div>
-                        <span className="font-bold text-slate-700 block mb-1.5">Technical Implementation:</span>
-                        <ul className="list-disc pl-5 space-y-1 text-slate-600">
-                          {feat.details.map((d, idx) => (
-                            <li key={idx}>{d}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {feat.equation && (
-                        <div className="p-3 bg-white border border-slate-200 rounded-lg font-mono text-[11px] text-blue-900">
-                          <span className="font-sans font-bold text-slate-500 block text-[10px] mb-1">Mathematical Formulation:</span>
-                          <code>{feat.equation}</code>
-                        </div>
-                      )}
-
-                      <div className="p-3 bg-blue-50/80 border border-blue-100 rounded-lg text-blue-900">
-                        <strong className="block font-bold mb-0.5">Patent Examination Focus:</strong>
-                        <span>{feat.patentFocus}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 3. Core Research Contribution Section */}
-      {activeTab === 'novelty' && (
-        <div className="space-y-6">
-          <div className="algorithm-card">
-            <p className="eyebrow">DIFFERENTIATION FROM PRIOR ART</p>
-            <h2 className="text-xl font-extrabold text-slate-900 mb-3">The Proposed Core Research Contribution</h2>
-            
-            <div className="prose text-xs text-slate-600 leading-relaxed space-y-3">
-              <p>
-                Traditional EV energy management systems attempt one of two extremes:
-              </p>
-              <ol className="list-decimal pl-5 space-y-1.5">
-                <li>
-                  <strong>Direct Reinforcement Learning / End-to-End Black Box:</strong> A neural network directly outputs charging power or dispenser assignment. 
-                  This suffers from fatal drawbacks: lack of explainability, catastrophic failure during battery thermal runaway, and complete inability to guarantee fairness or contractual driver agreements.
-                </li>
-                <li>
-                  <strong>Static Heuristic Priority Queues (FIFO / Earliest Deadline First):</strong> Rule-based systems that ignore multi-horizon consequence dynamics, 
-                  leading to severe battery thermal degradation, transformer peak surcharge spikes, and driver dissatisfaction.
-                </li>
-              </ol>
-
-              <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 my-4 text-slate-800">
-                <h4 className="font-extrabold text-blue-950 text-sm mb-1">The ANT-EV 2.0 Architectural Breakthrough:</h4>
-                <p>
-                  The proposed architecture cleanly separates <strong>consequence prediction</strong> from <strong>negotiation governance</strong>.
-                  ACCM predicts what <em>would happen</em> under all candidate actions across multiple horizons (5m, 10m, 15m, 30m, 60m), 
-                  including electrochemical battery wear and grid stress with calibrated uncertainty.
-                  PRISM-ANT independently takes these predicted consequence vectors and determines the fair, reciprocity-based allocation.
-                  Finally, a non-bypassable deterministic safety gate guarantees strict physical safety.
-                </p>
+        <div className="space-y-4">
+          <div className="allocation-panel">
+            <div className="panel-head mb-4">
+              <div>
+                <p className="eyebrow">RESEARCH DISCLOSURE MODULES</p>
+                <h2>Ten Candidate Inventive Technical Features</h2>
               </div>
+              <span className="safe-pill">
+                <FileCheck size={14} /> Full Claim Support
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mb-4 -mt-2">
+              Click each technical module to view formal mathematical formulations, operational details, and patent examination focus.
+            </p>
 
-              <p>
-                This tripartite separation (Prediction Intelligence → Game-Theoretic Negotiation → Deterministic Physics Barrier) 
-                is the precise technical relationship highlighted for publication and patent disclosure.
-              </p>
+            <div className="space-y-3">
+              {TECHNICAL_FEATURES.map((feat) => {
+                const isOpen = expandedFeature === feat.number;
+                return (
+                  <div key={feat.number} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs transition-all">
+                    <button
+                      onClick={() => setExpandedFeature(isOpen ? null : feat.number)}
+                      className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50/80 transition-colors"
+                    >
+                      <div className="flex items-center gap-3.5">
+                        <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 font-extrabold text-xs grid place-items-center flex-none border border-blue-200">
+                          {feat.number}
+                        </span>
+                        <div>
+                          <h3 className="text-xs font-extrabold text-slate-900">{feat.title}</h3>
+                          <p className="text-[11px] text-slate-500 mt-0.5">{feat.summary}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider hidden sm:inline">
+                          Module {feat.number}
+                        </span>
+                        {isOpen ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
+                      </div>
+                    </button>
+
+                    {isOpen && (
+                      <div className="px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/60 space-y-3 text-xs">
+                        <div>
+                          <span className="font-bold text-slate-800 block mb-1.5">Technical Implementation:</span>
+                          <ul className="list-disc pl-5 space-y-1 text-slate-600 text-[11px]">
+                            {feat.details.map((d, idx) => (
+                              <li key={idx}>{d}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {feat.equation && (
+                          <div className="p-3 bg-white border border-slate-200 rounded-lg font-mono text-[11px] text-blue-900">
+                            <span className="font-sans font-bold text-slate-500 block text-[10px] mb-1 uppercase tracking-wider">
+                              Mathematical Formulation:
+                            </span>
+                            <code>{feat.equation}</code>
+                          </div>
+                        )}
+
+                        <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-lg text-blue-950 text-[11px]">
+                          <strong className="block font-bold mb-0.5 text-blue-900">Patent Examination Focus:</strong>
+                          <span>{feat.patentFocus}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       )}
 
-      {/* 4. Interactive Patent Claim Explorer */}
-      {activeTab === 'claims' && (
-        <div className="algorithm-card">
-          <p className="eyebrow">CLAIMS 1–12 HIERARCHICAL MAPPING</p>
-          <h2 className="text-xl font-extrabold text-slate-900 mb-4">Interactive Patent Claim Explorer</h2>
+      {/* 6. Core Research Contribution View */}
+      {activeTab === 'novelty' && (
+        <div className="allocation-panel">
+          <div className="panel-head mb-4">
+            <div>
+              <p className="eyebrow">DIFFERENTIATION FROM PRIOR ART</p>
+              <h2>The Proposed Core Research & Patent Novelty</h2>
+            </div>
+            <span className="safe-pill">
+              <Award size={14} /> Academic & Patent Novelty
+            </span>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Component Tree */}
+          <p className="text-xs text-slate-500 mb-5 -mt-2">
+            Evaluation of traditional EV charging station management approaches versus the ANT-EV 2.0 tripartite architecture.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            {/* Prior Art 1 */}
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+              <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 text-[10px] font-bold uppercase">
+                Prior Art 1: Black-Box RL
+              </span>
+              <h4 className="font-extrabold text-slate-900 text-xs">Pure Reinforcement Learning</h4>
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                A single deep neural network or RL policy directly outputs charging power or bay switching commands.
+              </p>
+              <div className="pt-2 border-t border-slate-200 text-rose-700 text-[11px] space-y-1">
+                <p><b>Fatal Flaw 1:</b> Severe risk of battery thermal runaway during distribution transients.</p>
+                <p><b>Fatal Flaw 2:</b> Zero explainability for contractual fleet agreements or warranty audits.</p>
+              </div>
+            </div>
+
+            {/* Prior Art 2 */}
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+              <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold uppercase">
+                Prior Art 2: Heuristic Queues
+              </span>
+              <h4 className="font-extrabold text-slate-900 text-xs">Static FIFO / Deadline Queues</h4>
+              <p className="text-[11px] text-slate-600 leading-relaxed">
+                Deterministic rule-based scheduling based strictly on arrival time or earliest deadline first.
+              </p>
+              <div className="pt-2 border-t border-slate-200 text-amber-800 text-[11px] space-y-1">
+                <p><b>Fatal Flaw 1:</b> Ignores multi-horizon physical battery wear and Joule heating consequences.</p>
+                <p><b>Fatal Flaw 2:</b> Causes extreme transformer peak demand surcharges and grid stress.</p>
+              </div>
+            </div>
+
+            {/* Inventive ANT-EV 2.0 */}
+            <div className="p-4 rounded-xl border-2 border-blue-500 bg-blue-50/70 space-y-2 shadow-xs">
+              <span className="px-2 py-0.5 rounded bg-blue-600 text-white text-[10px] font-bold uppercase">
+                Inventive Solution
+              </span>
+              <h4 className="font-extrabold text-slate-900 text-xs">ANT-EV 2.0 Tripartite System</h4>
+              <p className="text-[11px] text-slate-700 leading-relaxed">
+                Decouples predictive forward simulation (ACCM) from game-theoretic reciprocity (PRISM-ANT), guarded by a deterministic physics gate.
+              </p>
+              <div className="pt-2 border-t border-blue-200 text-blue-950 text-[11px] space-y-1 font-medium">
+                <p><b>Inventive Step 1:</b> Standardized Action Sacrifice Vector S_a bridges physics with game theory.</p>
+                <p><b>Inventive Step 2:</b> Deterministic non-bypassable 42.0°C thermal barrier guarantees safety.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 p-4 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-700 leading-relaxed space-y-2">
+            <h4 className="font-extrabold text-slate-900 text-xs">Statutory Patent Examination Defense (35 U.S.C. 101 / 102 / 103):</h4>
+            <p>
+              The invention does not claim an abstract mathematical formula or mere generic data sorting.
+              Rather, it claims a specific, practical physical apparatus and method wherein physical sensor measurements
+              are forward-simulated across multi-scale horizons to quantify hardware sacrifice, governing physical high-voltage power
+              dispensers through an inviolable hardware interlock.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Patent Claim Explorer View */}
+      {activeTab === 'claims' && (
+        <div className="allocation-panel">
+          <div className="panel-head mb-4">
+            <div>
+              <p className="eyebrow">CLAIMS 1–12 HIERARCHICAL MAPPING</p>
+              <h2>Interactive Patent Claim Specification Explorer</h2>
+            </div>
+            <span className="safe-pill">
+              <FileCheck size={14} /> Formatted Patent Claim Language
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-500 mb-4 -mt-2">
+            Select an architectural component to inspect its formal patent claim mapping, input-output interfaces, and legal drafting text.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+            {/* Component Selector List */}
             <div className="space-y-2">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">System Components</span>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                Claim Architecture Tree
+              </span>
               {[
-                { id: 'accm', label: '01. ACCM Unified Model', claim: 'Claim 1 & Claim 12' },
-                { id: 'action', label: '02. Action Conditioning', claim: 'Claim 1 & Claim 5' },
-                { id: 'consequence', label: '03. Multi-Horizon Consequence', claim: 'Claim 12' },
-                { id: 'sacrifice', label: '04. Sacrifice Vector', claim: 'Claim 2 & Claim 4' },
-                { id: 'prism', label: '05. PRISM-ANT Coupling', claim: 'Claim 1, 4 & 7' },
-                { id: 'safety', label: '06. Deterministic Safety Gate', claim: 'Claim 1, 6 & 9' },
+                { id: 'accm', label: '01. ACCM Unified Model', claim: 'Independent Claim 1 & Claim 12' },
+                { id: 'action', label: '02. Action Conditioning Layer', claim: 'Independent Claim 1 & Claim 5' },
+                { id: 'consequence', label: '03. Multi-Horizon Decoder', claim: 'Dependent Claim 12' },
+                { id: 'sacrifice', label: '04. Sacrifice Vector S_a', claim: 'Dependent Claims 2 & 4' },
+                { id: 'prism', label: '05. PRISM-ANT Coupling', claim: 'Independent Claim 1, Claims 4 & 7' },
+                { id: 'safety', label: '06. Deterministic Safety Gate', claim: 'Independent Claim 1, Claims 6 & 9' },
               ].map((item) => (
                 <button
                   key={item.id}
                   onClick={() => setSelectedClaimNode(item.id)}
-                  className={`w-full text-left p-3 rounded-lg border text-xs transition-all ${
+                  className={`w-full text-left p-3 rounded-xl border text-xs transition-all ${
                     selectedClaimNode === item.id
                       ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                       : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
@@ -439,82 +610,220 @@ export const PatentCore: React.FC = () => {
               ))}
             </div>
 
-            {/* Details Inspector */}
-            <div className="md:col-span-2 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-3">
+            {/* Structured Details Inspector */}
+            <div className="md:col-span-2 p-5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-4">
               {selectedClaimNode === 'accm' && (
                 <div>
-                  <span className="badge-cyan px-2 py-0.5 rounded text-[10px] font-bold">Independent Claim 1 & Dependent Claim 12</span>
-                  <h3 className="font-extrabold text-base text-slate-900 mt-2">Unified Action-Conditioned Consequence Model (ACCM)</h3>
-                  <div className="mt-3 space-y-2 text-slate-600">
-                    <p><strong>Input:</strong> Multi-modal temporal sequence (60 steps), station graph topology, electro-thermal telemetry, negotiation context.</p>
-                    <p><strong>Processing:</strong> 4-block Selective State Space (SSM / Mamba), 2-layer Graph Attention Network (GAT), physics-informed cross-terms.</p>
-                    <p><strong>Output:</strong> 256-dimensional shared latent state representation Z_shared.</p>
-                    <p><strong>Research Significance:</strong> Unifies 6 isolated models into a single coherent deep-learning backbone with linear-time sequence complexity.</p>
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">
+                      Independent Claim 1 & Dependent Claim 12
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">1.23M Trained Parameters</span>
+                  </div>
+                  <h3 className="font-extrabold text-sm text-slate-900 mt-2">Unified Action-Conditioned Consequence Model (ACCM)</h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 text-[11px]">
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Input Signature:</b>
+                      <p className="text-slate-600">60-step temporal telemetry window (T=60), 6-node station topology graph, electro-thermal sensor telemetry.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Neural Engine:</b>
+                      <p className="text-slate-600">4 Selective State Space (SSM/Mamba) blocks, 2 Graph Attention (GAT) layers, physics-informed cross terms.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Output Signature:</b>
+                      <p className="text-slate-600">5-horizon physical consequence forecasts and the 8-dim Action Sacrifice Vector S_a ∈ [0, 1]⁸.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Inventive Purpose:</b>
+                      <p className="text-slate-600">Replaces 6 fragmented point-prediction models with a unified neural architecture, preventing conflicting recommendations.</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 p-3 bg-white border-l-4 border-blue-600 rounded-r-lg font-mono text-[10px] text-slate-700 leading-relaxed">
+                    <span className="font-sans font-bold text-slate-500 block mb-1 uppercase tracking-wider">Formal Claim Language Draft:</span>
+                    "1. A system for autonomous electric vehicle energy negotiation, comprising: a digital twin observer configured to obtain multi-modal time-series telemetry; a single deep neural network processor configured to forward-simulate candidate energy actions to produce a standardized action sacrifice vector; an independent negotiation engine configured to allocate energy based on historical reciprocity; and a hardware safety gate configured to unconditionally clamp actuation upon thermal breach."
                   </div>
                 </div>
               )}
 
               {selectedClaimNode === 'action' && (
                 <div>
-                  <span className="badge-purple px-2 py-0.5 rounded text-[10px] font-bold">Dependent Claim 1 & Claim 5</span>
-                  <h3 className="font-extrabold text-base text-slate-900 mt-2">Candidate Action Conditioning Mechanism</h3>
-                  <div className="mt-3 space-y-2 text-slate-600">
-                    <p><strong>Input:</strong> Candidate action vocabulary: FAST, STANDARD, DELAY, REDUCE, RESERVE, REDIRECT, V2G.</p>
-                    <p><strong>Processing:</strong> Action embedding layer projecting discrete choices to R^64, fused with Z_shared.</p>
-                    <p><strong>Output:</strong> Conditioned latent vector feeding multi-horizon consequence decoders.</p>
-                    <p><strong>Research Significance:</strong> Shifts ML role from passive forecasting to active counterfactual action evaluation.</p>
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">
+                      Independent Claim 1 & Dependent Claim 5
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">Action Embedding Dim: 64</span>
+                  </div>
+                  <h3 className="font-extrabold text-sm text-slate-900 mt-2">Action Conditioning Layer</h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 text-[11px]">
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Input Signature:</b>
+                      <p className="text-slate-600">Fused 256-dimensional latent state Z_shared and discrete candidate action index a ∈ [0..6].</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Neural Engine:</b>
+                      <p className="text-slate-600">64-dimensional learnable action embedding table projected and concatenated with shared latent space.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Output Signature:</b>
+                      <p className="text-slate-600">Action-conditioned latent representation feeding multi-horizon decoders.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Inventive Purpose:</b>
+                      <p className="text-slate-600">Forward-simulates counterfactual 'what if' futures for candidate energy levels prior to negotiation commitment.</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 p-3 bg-white border-l-4 border-blue-600 rounded-r-lg font-mono text-[10px] text-slate-700 leading-relaxed">
+                    <span className="font-sans font-bold text-slate-500 block mb-1 uppercase tracking-wider">Formal Claim Language Draft:</span>
+                    "5. The system of claim 1, wherein the neural processor comprises an action-conditioning layer configured to forward-simulate counterfactual trajectories for unexecuted energy commands from historical checkpoints."
                   </div>
                 </div>
               )}
 
               {selectedClaimNode === 'consequence' && (
                 <div>
-                  <span className="badge-emerald px-2 py-0.5 rounded text-[10px] font-bold">Dependent Claim 12</span>
-                  <h3 className="font-extrabold text-base text-slate-900 mt-2">Multi-Horizon Consequence & Uncertainty Prediction</h3>
-                  <div className="mt-3 space-y-2 text-slate-600">
-                    <p><strong>Input:</strong> Conditioned latent representations.</p>
-                    <p><strong>Processing:</strong> 5 synchronized multi-horizon decoders for 5m, 10m, 15m, 30m, 60m with heteroscedastic heads.</p>
-                    <p><strong>Output:</strong> 11 continuous physical & economic targets with mean μ and variance σ² for each horizon.</p>
-                    <p><strong>Research Significance:</strong> Provides proactive foresight to prevent transformer overload before it happens.</p>
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">
+                      Dependent Claim 12
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">Horizons: 5m, 10m, 15m, 30m, 60m</span>
+                  </div>
+                  <h3 className="font-extrabold text-sm text-slate-900 mt-2">Multi-Horizon Consequence Decoder</h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 text-[11px]">
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Input Signature:</b>
+                      <p className="text-slate-600">Conditioned latent vector Z_conditioned = [Z_shared; e_a].</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Neural Engine:</b>
+                      <p className="text-slate-600">Horizon-specific multi-layer perceptron heads outputting Gaussian predictive mean and variance.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Output Signature:</b>
+                      <p className="text-slate-600">11 physical state predictions with heteroscedastic uncertainty across 5 temporal scales.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Inventive Purpose:</b>
+                      <p className="text-slate-600">Bridges short-term thermal safety (5m) with long-term cell cycle life preservation (60m).</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 p-3 bg-white border-l-4 border-blue-600 rounded-r-lg font-mono text-[10px] text-slate-700 leading-relaxed">
+                    <span className="font-sans font-bold text-slate-500 block mb-1 uppercase tracking-wider">Formal Claim Language Draft:</span>
+                    "12. The system of claim 1, wherein the consequence model simultaneously outputs physical state distributions across multiple discrete future horizons, capturing both transient thermal spikes and cumulative capacity degradation."
                   </div>
                 </div>
               )}
 
               {selectedClaimNode === 'sacrifice' && (
                 <div>
-                  <span className="badge-amber px-2 py-0.5 rounded text-[10px] font-bold">Dependent Claim 2 & Claim 4</span>
-                  <h3 className="font-extrabold text-base text-slate-900 mt-2">Learned Action-Specific Sacrifice Vector</h3>
-                  <div className="mt-3 space-y-2 text-slate-600">
-                    <p><strong>Input:</strong> Action-conditioned consequence distribution.</p>
-                    <p><strong>Processing:</strong> Multi-attribute cost transformation normalized across battery, degradation, thermal, grid, waiting, and fairness.</p>
-                    <p><strong>Output:</strong> 8-dimensional normalized vector \vec{`{S}`}_a ∈ [0, 1]^8.</p>
-                    <p><strong>Research Significance:</strong> Translates complex non-linear electrochemistry into an auditable game-theoretic currency.</p>
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">
+                      Dependent Claims 2 & 4
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">Dimension: 8 (Bounded [0, 1])</span>
+                  </div>
+                  <h3 className="font-extrabold text-sm text-slate-900 mt-2">Action Sacrifice Vector Representation</h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 text-[11px]">
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Input Signature:</b>
+                      <p className="text-slate-600">Multi-horizon decoded physical consequence tensor Y_(t+H).</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Neural Engine:</b>
+                      <p className="text-slate-600">Physics-grounded linear projection and normalization layer bounding impacts into [0, 1].</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Output Signature:</b>
+                      <p className="text-slate-600">S_a = [battery, degradation, thermal, grid, waiting, cost, availability, fairness] ∈ [0, 1]⁸.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Inventive Purpose:</b>
+                      <p className="text-slate-600">Translates complex electrochemical variables into a clean, game-theoretic currency consumed by negotiation.</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 p-3 bg-white border-l-4 border-blue-600 rounded-r-lg font-mono text-[10px] text-slate-700 leading-relaxed">
+                    <span className="font-sans font-bold text-slate-500 block mb-1 uppercase tracking-wider">Formal Claim Language Draft:</span>
+                    "4. The system of claim 1, wherein the action sacrifice vector standardizes electrochemical cell degradation, Joule thermal strain, and grid congestion into an 8-dimensional normalized trade-off representation."
                   </div>
                 </div>
               )}
 
               {selectedClaimNode === 'prism' && (
                 <div>
-                  <span className="badge-cyan px-2 py-0.5 rounded text-[10px] font-bold">Independent Claim 1 & Dependent Claim 4</span>
-                  <h3 className="font-extrabold text-base text-slate-900 mt-2">PRISM-ANT Reciprocity Negotiation Coupling</h3>
-                  <div className="mt-3 space-y-2 text-slate-600">
-                    <p><strong>Input:</strong> Driver utility token, historical reciprocity ledger, and ACCM sacrifice vector \vec{`{S}`}_a.</p>
-                    <p><strong>Processing:</strong> Exponential-decay reciprocity aging equation and capped water-filling readiness reserve.</p>
-                    <p><strong>Output:</strong> Transparent, negotiated charging action and power allocation.</p>
-                    <p><strong>Research Significance:</strong> Ensures game-theoretic fairness, privacy preservation, and decentralized coordination.</p>
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">
+                      Independent Claim 1, Claims 4 & 7
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">Reciprocity Ledger</span>
+                  </div>
+                  <h3 className="font-extrabold text-sm text-slate-900 mt-2">PRISM-ANT Reciprocity Negotiation Engine</h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 text-[11px]">
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Input Signature:</b>
+                      <p className="text-slate-600">Action Sacrifice Vector S_a, driver privacy utility tokens, and historical credit ledger.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Algorithmic Engine:</b>
+                      <p className="text-slate-600">Game-theoretic concession evaluation, exponential credit decay, and Gini fairness equilibrium.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Output Signature:</b>
+                      <p className="text-slate-600">Negotiated power command proposals for each charging bay.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Inventive Purpose:</b>
+                      <p className="text-slate-600">Guarantees transparent, verifiable, and non-gameable multi-driver resource allocation.</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 p-3 bg-white border-l-4 border-blue-600 rounded-r-lg font-mono text-[10px] text-slate-700 leading-relaxed">
+                    <span className="font-sans font-bold text-slate-500 block mb-1 uppercase tracking-wider">Formal Claim Language Draft:</span>
+                    "7. The system of claim 1, wherein the negotiation engine maintains an auditable exponential-decay ledger rewarding cooperative energy concessions independently of neural weights."
                   </div>
                 </div>
               )}
 
               {selectedClaimNode === 'safety' && (
                 <div>
-                  <span className="badge-crimson px-2 py-0.5 rounded text-[10px] font-bold">Dependent Claim 1, 6 & Claim 9</span>
-                  <h3 className="font-extrabold text-base text-slate-900 mt-2">Deterministic Hard Safety & Physics Constraints Gate</h3>
-                  <div className="mt-3 space-y-2 text-slate-600">
-                    <p><strong>Input:</strong> Proposed negotiated power allocation and live physical sensor telemetry.</p>
-                    <p><strong>Processing:</strong> Thermal guard (T_bat ≥ 42.0°C), feeder capacity limit (Σ P_i ≤ P_max), and OCPP fault detection.</p>
-                    <p><strong>Output:</strong> Physically guaranteed safe power dispatch command to dispenser.</p>
-                    <p><strong>Research Significance:</strong> Guaranteed zero battery thermal runaway events and zero transformer breaker trips.</p>
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-bold">
+                      Independent Claim 1, Claims 6 & 9
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">Cutoff: 42.0°C / Feeder Cap</span>
+                  </div>
+                  <h3 className="font-extrabold text-sm text-slate-900 mt-2">Deterministic Hard Safety & Physics Gate</h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 text-[11px]">
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Input Signature:</b>
+                      <p className="text-slate-600">Negotiated power command P_proposed and real-time physical sensor telemetry.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Safety Logic:</b>
+                      <p className="text-slate-600">Non-bypassable hardware comparator: IF T_bat ≥ 42.0°C OR Σ P_i &gt; P_station,max THEN CLAMP.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Output Signature:</b>
+                      <p className="text-slate-600">Verified safe actuation directive sent to charging bay hardware.</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+                      <b className="text-slate-800 block text-[10px] uppercase text-blue-600">Inventive Purpose:</b>
+                      <p className="text-slate-600">Guarantees that machine-learning errors or driver priority requests cannot breach physical safety limits.</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 p-3 bg-white border-l-4 border-blue-600 rounded-r-lg font-mono text-[10px] text-slate-700 leading-relaxed">
+                    <span className="font-sans font-bold text-slate-500 block mb-1 uppercase tracking-wider">Formal Claim Language Draft:</span>
+                    "6. The system of claim 1, wherein the deterministic safety gate unconditionally throttles charging power to a safe maintenance level upon detecting battery cell temperature exceeding a predetermined threshold of 42.0°C."
                   </div>
                 </div>
               )}
@@ -522,17 +831,6 @@ export const PatentCore: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Professional Legal Disclaimer */}
-      <div className="p-4 rounded-xl bg-slate-100 border border-slate-300 text-[11px] text-slate-600 leading-relaxed flex items-start gap-3">
-        <HelpCircle size={18} className="text-slate-400 flex-none mt-0.5" />
-        <div>
-          <strong className="text-slate-800 block mb-0.5">Professional Academic & Patent Framing Note:</strong>
-          Patent Core presents the proposed technical architecture and candidate inventive concepts for research,
-          academic defense, and patent-development purposes. Legal novelty, patentability, and formal claim scope require
-          formal prior-art analysis and professional patent examination by licensed patent authorities.
-        </div>
-      </div>
     </div>
   );
 };
